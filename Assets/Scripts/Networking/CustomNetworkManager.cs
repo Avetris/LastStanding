@@ -11,16 +11,26 @@ public class CustomNetworkManager : NetworkManager
 
     private bool isGameInProgress = false;
 
-    public List<Player> Players {get; } = new List<Player>();
+    public List<Player> Players { get; } = new List<Player>();
 
     public static event Action ClientOnConnected;
     public static event Action ClientOnDisconnected;
+
+    public override void Start()
+    {
+        foreach (GameObject spawnablePrefab in Resources.LoadAll<GameObject>("Prefabs/Gameplay"))
+        {
+            if(spawnablePrefab.GetComponent<NetworkIdentity>() != null)
+                spawnPrefabs.Add(spawnablePrefab);
+        }
+        base.Start();
+    }
 
     #region Server
 
     public override void OnServerConnect(NetworkConnection conn)
     {
-        if(!isGameInProgress) { return; }
+        if (!isGameInProgress) { return; }
         conn.Disconnect();
     }
 
@@ -42,7 +52,7 @@ public class CustomNetworkManager : NetworkManager
 
     public void StartGame()
     {
-        if(Players.Count < 2) { return; }
+        if (Players.Count < 2) { return; }
 
         isGameInProgress = true;
 
@@ -57,35 +67,33 @@ public class CustomNetworkManager : NetworkManager
 
         Players.Add(player);
 
-
-        /*
         player.SetDisplayName($"Player {Players.Count}");
 
-        player.SetTeamColor(new Color(  
+        player.SetDisplayColor(new Color(  
             UnityEngine.Random.Range(0f, 1f),
             UnityEngine.Random.Range(0f, 1f),
             UnityEngine.Random.Range(0f, 1f)
         ));
 
         player.SetPartyOwner(Players.Count == 1);
-        
-        */
+
+        player.SpawnPlayerCharacter(GetStartPosition().position);
     }
 
     public override void OnServerSceneChanged(string sceneName)
     {
-        if(SceneManager.GetActiveScene().name.StartsWith("Scene_Map"))
+        if (SceneManager.GetActiveScene().name.StartsWith("GameScene"))
         {
-            GameOverHandler gameOverHandleInstance = Instantiate(gameOverHandler);
-            NetworkServer.Spawn(gameOverHandleInstance.gameObject);
+            // GameOverHandler gameOverHandleInstance = Instantiate(gameOverHandler);
+            // NetworkServer.Spawn(gameOverHandleInstance.gameObject);
 
-            /*foreach(Player player in Players)
+            foreach(Player player in Players)
             {
-                GameObject baseInstance = Instantiate(unitBasePrefab, GetStartPosition().position, Quaternion.identity);
-                NetworkServer.Spawn(baseInstance, player.connectionToClient);
-            }*/
+                player.SpawnPlayerCharacter(GetStartPosition().position);
+            }
         }
     }
+
     #endregion
 
     #region Client
