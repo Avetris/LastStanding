@@ -17,7 +17,6 @@ public class LobbyMenu : MonoBehaviour
     {
         CustomNetworkManager.ClientOnConnected += HandleClientConnect;
         Player.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
-        // Player.ClientOnInfoUpdated += ClientHandleInfoUpdated;
     }
 
     private void OnDestroy()
@@ -38,23 +37,23 @@ public class LobbyMenu : MonoBehaviour
 
     private void ClientHandleInfoUpdated()
     {
-        List<Player> players = ((CustomNetworkManager)NetworkManager.singleton).Players;
+        // List<Player> players = ((CustomNetworkManager)NetworkManager.singleton).Players;
 
-        Debug.Log($"Players Count {players.Count}");
+        // Debug.Log($"Players Count {players.Count}");
 
-        for(int i = 0; i < playerNameTexts.Length; i++)
-        {
-            if(i < players.Count)
-            {
-                playerNameTexts[i].text = players[i].GetDisplayName();
-            }
-            else
-            {
-                playerNameTexts[i].text = "Waiting For Players...";
-            }
-        }
+        // for(int i = 0; i < playerNameTexts.Length; i++)
+        // {
+        //     if(i < players.Count)
+        //     {
+        //         playerNameTexts[i].text = players[i].GetDisplayName();
+        //     }
+        //     else
+        //     {
+        //         playerNameTexts[i].text = "Waiting For Players...";
+        //     }
+        // }
 
-        startGameButton.interactable = players.Count > 1;
+        // startGameButton.interactable = players.Count > 1;
     }
 
     public void StartGame()

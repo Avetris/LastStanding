@@ -3,16 +3,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class CharacterControlller : NetworkBehaviour
+public class PlayerControlller : NetworkBehaviour
 {
     [SerializeField] private float speed = 10f;
     [SerializeField] private float rotationSpeed = 3.0f;
     [SerializeField] private CharacterController controller = null;
-    [SerializeField] private GameObject characterPrefab = null;
-
-    public GameObject identity;
-
-    Rigidbody rigidbody = null;
+    
     Controls controls;
 
     Vector3 point;
@@ -22,7 +18,6 @@ public class CharacterControlller : NetworkBehaviour
     private void Start()
     {
         InitInput();
-        identity = NetworkClient.connection.identity.gameObject; 
     }
 
     [Client]
@@ -60,9 +55,13 @@ public class CharacterControlller : NetworkBehaviour
     [Command]
     public void CmdMove(Vector2 direction, float currentRotationSpeed, float currentSpeed)
     {
-        characterPrefab.transform.Rotate(0, direction.x * currentRotationSpeed, 0);
-        Vector3 forward = characterPrefab.transform.TransformDirection(Vector3.forward);
-        controller.SimpleMove(forward * currentSpeed * direction.y);
+        Vector3 rotation = new Vector3(0, direction.x * currentRotationSpeed, 0);
+ 
+        Vector3 move = new Vector3(0, 0, direction.y * Time.deltaTime);
+        move = controller.transform.TransformDirection(move);
+        controller.Move(move * currentSpeed);
+
+        controller.transform.Rotate(rotation);
     }
 
     #endregion
@@ -73,7 +72,10 @@ public class CharacterControlller : NetworkBehaviour
     private void Update()
     {
         if(!hasAuthority) { return; }
-        CmdMove(currentMoveDirection, rotationSpeed, speed);
+        if(currentMoveDirection.x != 0 || currentMoveDirection.y != 0)
+        {
+            CmdMove(currentMoveDirection, rotationSpeed, speed);
+        }
     }
     
     private void FixedUpdate()

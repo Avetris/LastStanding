@@ -15,6 +15,7 @@ public class CustomNetworkManager : NetworkManager
 
     public static event Action ClientOnConnected;
     public static event Action ClientOnDisconnected;
+    public static event Action<int> PlayerNumberUpdated;
 
     public override void Start()
     {
@@ -39,6 +40,8 @@ public class CustomNetworkManager : NetworkManager
         Player player = conn.identity.GetComponent<Player>();
 
         Players.Remove(player);
+
+        PlayerNumberUpdated?.Invoke(Players.Count);
 
         base.OnServerDisconnect(conn);
     }
@@ -65,19 +68,25 @@ public class CustomNetworkManager : NetworkManager
 
         Player player = conn.identity.GetComponent<Player>();
 
-        Players.Add(player);
+        Players.Add(conn.identity.GetComponent<Player>());
 
-        player.SetDisplayName($"Player {Players.Count}");
+        PlayerInfo playerInfo = conn.identity.GetComponent<PlayerInfo>();
 
-        player.SetDisplayColor(new Color(  
+        playerInfo.SetDisplayName($"Player {Players.Count}");
+
+        playerInfo.SetDisplayColor(new Color(  
             UnityEngine.Random.Range(0f, 1f),
             UnityEngine.Random.Range(0f, 1f),
             UnityEngine.Random.Range(0f, 1f)
         ));
 
         player.SetPartyOwner(Players.Count == 1);
+        
+        // player.transform.position = GetStartPosition().position;
+        
+        // Debug.Log(player.transform.position);
 
-        player.SpawnPlayerCharacter(GetStartPosition().position);
+        PlayerNumberUpdated?.Invoke(Players.Count);
     }
 
     public override void OnServerSceneChanged(string sceneName)
@@ -89,7 +98,7 @@ public class CustomNetworkManager : NetworkManager
 
             foreach(Player player in Players)
             {
-                player.SpawnPlayerCharacter(GetStartPosition().position);
+                player.transform.position = GetStartPosition().position;
             }
         }
     }
