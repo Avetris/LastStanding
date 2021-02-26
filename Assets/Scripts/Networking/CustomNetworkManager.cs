@@ -81,10 +81,6 @@ public class CustomNetworkManager : NetworkManager
         ));
 
         player.SetPartyOwner(Players.Count == 1);
-        
-        // player.transform.position = GetStartPosition().position;
-        
-        // Debug.Log(player.transform.position);
 
         PlayerNumberUpdated?.Invoke(Players.Count);
     }
