@@ -20,7 +20,9 @@ public class Player : NetworkBehaviour
     [Command]
     public void CmdStartGame()
     {
+        if(!isPartyOwner || !hasAuthority) { return; }
 
+        ((CustomNetworkManager) NetworkManager.singleton).StartGame();
     }
 
     #endregion

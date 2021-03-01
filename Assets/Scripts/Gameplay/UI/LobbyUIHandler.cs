@@ -1,15 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.SceneManagement;
+using Mirror;
 
-public class LobbyUIHandler : MonoBehaviour
+public class LobbyUIHandler : NetworkBehaviour
 {
 
     [SerializeField] private Button startGameButton = null;
 
     private void Start()
     {
-        CustomNetworkManager.PlayerNumberUpdated += HandleClientConnect;
         Player.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
 
         startGameButton.interactable = false;
@@ -17,7 +18,6 @@ public class LobbyUIHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        CustomNetworkManager.PlayerNumberUpdated -= HandleClientConnect;
         Player.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
     }
 
@@ -26,16 +26,16 @@ public class LobbyUIHandler : MonoBehaviour
         startGameButton.gameObject.SetActive(state);
     }
 
-
-    private void HandleClientConnect(int playerCount)
+    [ClientRpc]
+    public void RpcChangeStartGameStatus(bool status)
     {
-        startGameButton.interactable = playerCount > 1;
+        startGameButton.interactable = status;
     }
 
 
     public void StartGame()
     {
-        // NetworkClient.connection.identity.GetComponent<RTSPlayer>().CmdStartGame();
+        NetworkClient.connection.identity.GetComponent<Player>().CmdStartGame();
     }
 
     public void LeaveLobby()
@@ -48,7 +48,7 @@ public class LobbyUIHandler : MonoBehaviour
         {
             NetworkManager.singleton.StopClient();
 
-            // SceneManager.LoadScene(0);
+            SceneManager.LoadScene(0);
         }
     }
 

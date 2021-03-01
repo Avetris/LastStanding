@@ -8,6 +8,4 @@ public class GameplayButtonsHandler : MonoBehaviour {
     private void Start() {
         actionButton.interactable = false;
     }
-
-    
 }

@@ -6,8 +6,16 @@ public class CharacterCollisionHandler : NetworkBehaviour
 {
 
     [SerializeField] private Button actionButton = null;
+    [SerializeField] private GameObject playerUI = null;
 
     private GameObject actionTarget;
+
+    private void Start() {
+        if(hasAuthority)
+        {
+            playerUI.SetActive(true);
+        }
+    }
     
     #region Server
 
