@@ -596,11 +596,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7914825156496858503, guid: d6878cdfbedf7b848908fdf0a9d27aa5, type: 3}
+      propertyPath: sceneId
+      value: 21007492
+      objectReference: {fileID: 0}
     - target: {fileID: 8026405548227016870, guid: d6878cdfbedf7b848908fdf0a9d27aa5, type: 3}
       propertyPath: m_Name
       value: Network Manager
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7914825156496858503, guid: d6878cdfbedf7b848908fdf0a9d27aa5, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: d6878cdfbedf7b848908fdf0a9d27aa5, type: 3}
 --- !u!222 &6977440318957308752
 CanvasRenderer:

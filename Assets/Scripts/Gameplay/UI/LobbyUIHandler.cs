@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
-using Mirror;
 
 public class LobbyUIHandler : NetworkBehaviour
 {

@@ -2,13 +2,16 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
 
-public class CharacterCollisionHandler : NetworkBehaviour
+public class PlayerCollisionHandler : NetworkBehaviour
 {
-
-    [SerializeField] private Button actionButton = null;
     [SerializeField] private GameObject playerUI = null;
+    
+    public GameObject actionTarget;
 
-    private GameObject actionTarget;
+    public GameObject GeActionTarget()
+    {
+        return actionTarget;
+    }
 
     private void Start() {
         if(hasAuthority)
@@ -25,7 +28,7 @@ public class CharacterCollisionHandler : NetworkBehaviour
         if ("Usable".Equals(other.gameObject.tag))
         {
             actionTarget = other.gameObject;
-            RpcUpdateActionButtonStatus(true);
+            RpcUpdateActionButtonStatus(actionTarget, true);
         }
     }
 
@@ -34,8 +37,8 @@ public class CharacterCollisionHandler : NetworkBehaviour
     {
         if ("Usable".Equals(other.gameObject.tag) && actionTarget == other.gameObject)
         {
+            RpcUpdateActionButtonStatus(actionTarget, false);
             actionTarget = null;
-            RpcUpdateActionButtonStatus(false);
         }
     }
 
@@ -43,10 +46,14 @@ public class CharacterCollisionHandler : NetworkBehaviour
 
     #region Client
     [ClientRpc]
-    private void RpcUpdateActionButtonStatus(bool status)
+    private void RpcUpdateActionButtonStatus(GameObject actionBtn, bool status)
     {
         if(!hasAuthority) { return; }
-        actionButton.interactable = status;
+        if(actionTarget == null)
+        {
+            actionTarget = actionBtn;
+        }
+        actionTarget.GetComponent<ActionObject>().SetIsPlayerNear(status);
     }
 
     #endregion

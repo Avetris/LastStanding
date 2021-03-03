@@ -1,17 +1,20 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DialogDisplayHandler : MonoBehaviour {
+public class DialogDisplayHandler : MonoBehaviour
+{
 
-    public enum PanelType{ None, Settings, RoomSettings, Customize}
+    [SerializeField] private GameObject settingsPanel = null;
+    [SerializeField] private GameObject customizePanel = null;
+    [SerializeField] private GameObject roomSettingsPanel = null;
 
-    [SerializeField] private GameObject settingsPanel;
-    [SerializeField] private GameObject customizePanel;
-    [SerializeField] private GameObject roomSettingsPanel;
+    private Constants.DialogType openedPanel = Constants.DialogType.None;
 
-    private PanelType openedPanel = PanelType.None;
-    
-    private void Start() {
+    public event Action<bool> OnDialogChange;
+
+    private void Start()
+    {
         // player = NetworkClient.connection.identity.GetComponent<RTSPlayer>();     
     }
 
@@ -20,18 +23,28 @@ public class DialogDisplayHandler : MonoBehaviour {
         settingsPanel?.SetActive(false);
         customizePanel?.SetActive(false);
         roomSettingsPanel?.SetActive(false);
-    }    
 
-    
-    public void OpenPanel(PanelType panelToOpen)
+        OnDialogChange?.Invoke(false);
+    }
+
+
+    public void OpenPanel(Constants.DialogType panelToOpen)
     {
         ClosePanels();
 
-        switch(panelToOpen)
+        bool open = true;
+
+        switch (panelToOpen)
         {
-            case PanelType.Settings: settingsPanel?.SetActive(true); break;
-            case PanelType.RoomSettings: roomSettingsPanel?.SetActive(true); break;
-            case PanelType.Customize: customizePanel?.SetActive(true); break;
+            case Constants.DialogType.Settings: settingsPanel?.SetActive(true); break;
+            case Constants.DialogType.RoomSettings: roomSettingsPanel?.SetActive(true); break;
+            case Constants.DialogType.Customize: customizePanel?.SetActive(true); break;
+            default: open = false; break;
         }
-    }    
+
+        if (open)
+        {
+            OnDialogChange?.Invoke(true);
+        }
+    }
 }

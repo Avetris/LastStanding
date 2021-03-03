@@ -21,7 +21,7 @@ public class CustomNetworkManager : NetworkManager
     {
         foreach (GameObject spawnablePrefab in Resources.LoadAll<GameObject>("Prefabs/Gameplay"))
         {
-            if(spawnablePrefab.GetComponent<NetworkIdentity>() != null)
+            if (spawnablePrefab.GetComponent<NetworkIdentity>() != null)
                 spawnPrefabs.Add(spawnablePrefab);
         }
         base.Start();
@@ -32,6 +32,7 @@ public class CustomNetworkManager : NetworkManager
     public override void OnServerConnect(NetworkConnection conn)
     {
         if (!isGameInProgress) { return; }
+
         conn.Disconnect();
     }
 
@@ -48,6 +49,8 @@ public class CustomNetworkManager : NetworkManager
 
     public override void OnStopServer()
     {
+        Destroy(LobbyManager.singleton.gameObject);
+
         Players.Clear();
 
         isGameInProgress = false;
@@ -74,12 +77,6 @@ public class CustomNetworkManager : NetworkManager
 
         playerInfo.SetDisplayName($"Player {Players.Count}");
 
-        playerInfo.SetDisplayColor(new Color(  
-            UnityEngine.Random.Range(0f, 1f),
-            UnityEngine.Random.Range(0f, 1f),
-            UnityEngine.Random.Range(0f, 1f)
-        ));
-
         player.SetPartyOwner(Players.Count == 1);
 
         PlayerNumberUpdated?.Invoke(Players.Count);
@@ -92,7 +89,7 @@ public class CustomNetworkManager : NetworkManager
             // GameOverHandler gameOverHandleInstance = Instantiate(gameOverHandler);
             // NetworkServer.Spawn(gameOverHandleInstance.gameObject);
 
-            foreach(Player player in Players)
+            foreach (Player player in Players)
             {
                 player.transform.position = GetStartPosition().position;
             }

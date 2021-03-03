@@ -1,8 +1,5 @@
-using UnityEngine;
 using Mirror;
 using System;
-
-public enum CharacterParts {HEAD, BODY, LEG, FOOT};
 
 public class Player : NetworkBehaviour
 {
@@ -23,7 +20,7 @@ public class Player : NetworkBehaviour
         if(!isPartyOwner || !hasAuthority) { return; }
 
         ((CustomNetworkManager) NetworkManager.singleton).StartGame();
-    }
+    }   
 
     #endregion
 

@@ -285,6 +285,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionButton: {fileID: 7312772894857577345}
+  playerCollisionHandler: {fileID: 3413577384234140506}
 --- !u!1 &621556360679589662
 GameObject:
   m_ObjectHideFlags: 0
@@ -560,12 +561,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 706770072257986932}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b4587e72a155e8499d724d4b67bf565, type: 3}
+  m_Script: {fileID: 11500000, guid: 622827c34faaf38498247d5bdcae03f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  actionButton: {fileID: 7312772894857577345}
   playerUI: {fileID: 37252424751628682}
 --- !u!54 &3816674156624266443
 Rigidbody:
@@ -1146,7 +1146,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 59ec1d396a294e44693e7c8f16cd7fdc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
