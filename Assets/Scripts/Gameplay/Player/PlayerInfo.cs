@@ -10,12 +10,13 @@ public struct CharacterData
 
 public class PlayerInfo : NetworkBehaviour
 {
+    [SyncVar]
+    public int playerId = 0;
+
     [SyncVar(hook = nameof(OnNameChangeHandler))]
     private string displayName = "";
     [SyncVar(hook = nameof(OnColorChangeHandler))]
     private Color displayColor = Color.clear;
-    [SyncVar]
-    private Color tempColor = Color.clear;
 
     public event Action<Color> ClientOnColorUpdated;
     public event Action<string> ClientOnNameUpdated;
@@ -48,10 +49,15 @@ public class PlayerInfo : NetworkBehaviour
     {
         displayColor = color;
     }
-    
-    public Color GetTempColor()
+
+    public void SetPlayerId(int id)
     {
-        return tempColor; // == Color.clear ? displayColor : tempColor;
+        playerId = id;
+    }
+
+    public int GetPlayerId()
+    {
+        return playerId;
     }
     #endregion
 
@@ -69,33 +75,13 @@ public class PlayerInfo : NetworkBehaviour
     {
         if (!hasAuthority && !isServer) { return; }
 
-        tempColor = newColor;
-
-        bool canChange = LobbyManager.singleton.CanSetColor(displayColor, newColor);
+        bool canChange = LobbyManager.singleton.CanSetColor(playerId, displayColor, newColor);
 
         if (canChange)
         {
             SetDisplayColor(newColor);
         }
-        tempColor = Color.clear;
     }
-
-    public override void OnStartServer()
-    {
-        if (!hasAuthority) { return; }
-
-        Color newColor = LobbyManager.singleton.GetNextColor();
-
-        SetDisplayColor(newColor);
-    }
-
-    public override void OnStopServer()
-    {
-        if (!hasAuthority) { return; }
-
-        LobbyManager.singleton.CanSetColor(displayColor, Color.clear);
-    }
-
     #endregion
 
     #region Client
@@ -108,6 +94,13 @@ public class PlayerInfo : NetworkBehaviour
     public void OnColorChangeHandler(Color oldColor, Color newColor)
     {
         ClientOnColorUpdated?.Invoke(newColor);
+    }
+
+    public override void OnStopClient()
+    {
+        if (!isClientOnly) { return; }
+
+        LobbyManager.singleton.CanSetColor(playerId, displayColor, Color.clear);
     }
 
     #endregion

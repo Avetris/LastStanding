@@ -43,7 +43,4 @@ public class GameplayButtonsHandler : MonoBehaviour
             actionButton.interactable = status;
         }
     }
-
-
-
 }

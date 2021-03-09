@@ -25,39 +25,39 @@ public class LobbyManager : NetworkBehaviour
     private int maxPlayers = 10;
     private int currentPlayers;
     
-    private SyncDictionary<Color, bool> availableColors = new SyncDictionary<Color, bool>{
-        {Color.red, true},
-        {Color.magenta, true},
-        {Color.blue, true},
-        {Color.green, true},
-        {Color.white, true},
-        {Color.black, true},
-        {Color.gray, true},
-        {Color.yellow, true},
-        {new Color(0.93f, 0.33f, 0.73f), true},
-        {new Color(0.94f, 0.49f, 0.05f), true},
-        {new Color(0.42f, 0.19f, 0.74f), true},
-        {new Color(0.44f, 0.29f, 0.12f), true},
-        {new Color(0.22f, 1, 0.86f), true},
-        {new Color(0.31f, 0.94f, 0.22f), true},
-        {new Color(0.83f, 0.69f, 0.22f), true},
+    private SyncDictionary<Color, int> playerColors = new SyncDictionary<Color, int>{
+        {Color.red, -1},
+        {Color.magenta, -1},
+        {Color.blue, -1},
+        {Color.green, -1},
+        {Color.white, -1},
+        {Color.black, -1},
+        {Color.gray, -1},
+        {Color.yellow, -1},
+        {new Color(0.93f, 0.33f, 0.73f), -1},
+        {new Color(0.94f, 0.49f, 0.05f), -1},
+        {new Color(0.42f, 0.19f, 0.74f), -1},
+        {new Color(0.44f, 0.29f, 0.12f), -1},
+        {new Color(0.22f, 1, 0.86f), -1},
+        {new Color(0.31f, 0.94f, 0.22f), -1},
+        {new Color(0.83f, 0.69f, 0.22f), -1},
     };
 
-    public void UpdateColorChangeListeners(bool add, SyncDictionary<Color, bool>.SyncDictionaryChanged callback)
+    public void UpdateColorChangeListeners(bool add, SyncDictionary<Color, int>.SyncDictionaryChanged callback)
     {
         if (add)
         {
-            availableColors.Callback += callback;
+            playerColors.Callback += callback;
         }
         else
         {
-            availableColors.Callback -= callback;
+            playerColors.Callback -= callback;
         }
     }
 
-    public List<(Color color, bool available)> GetColors()
+    public List<(Color color, int playerId)> GetColors()
     {
-        return availableColors.Select(x => (x.Key, x.Value)).ToList();
+        return playerColors.Select(x => (x.Key, x.Value)).ToList();
     }    
 
     private void Start()
@@ -71,23 +71,23 @@ public class LobbyManager : NetworkBehaviour
     }
 
     [Server]
-    public Color GetNextColor()
+    public Color GetNextColor(int playerId)
     {
         Color col = Color.clear;
-        foreach (KeyValuePair<Color, bool> entry in availableColors)
+        foreach (KeyValuePair<Color, int> entry in playerColors)
         {
-            if (entry.Value)
+            if (entry.Value == -1)
             {
                 col = entry.Key;
             }
         }
-        availableColors[col] = false;
+        playerColors[col] = playerId;
 
         return col;
     }
 
     [Server]
-    public bool CanSetColor(Color oldColor, Color newColor)
+    public bool CanSetColor(int playerId, Color oldColor, Color newColor)
     {
         bool can = false;
 
@@ -95,15 +95,15 @@ public class LobbyManager : NetworkBehaviour
         {
             can = true;
         }
-        else if (availableColors[newColor])
+        else if (playerColors[newColor] == -1)
         {
             can = true;
-            availableColors[newColor] = false;
+            playerColors[newColor] = playerId;
         }
 
         if (can && oldColor != Color.clear)
         {
-            availableColors[oldColor] = true;
+            playerColors[oldColor] = -1;
         }
 
         return can;

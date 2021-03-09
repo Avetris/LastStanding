@@ -6,7 +6,7 @@ public class PlayerCollisionHandler : NetworkBehaviour
 {
     [SerializeField] private GameObject playerUI = null;
     
-    public GameObject actionTarget;
+    private GameObject actionTarget;
 
     public GameObject GeActionTarget()
     {
@@ -49,6 +49,7 @@ public class PlayerCollisionHandler : NetworkBehaviour
     private void RpcUpdateActionButtonStatus(GameObject actionBtn, bool status)
     {
         if(!hasAuthority) { return; }
+        
         if(actionTarget == null)
         {
             actionTarget = actionBtn;

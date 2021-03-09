@@ -9,8 +9,11 @@ public class CustomizePanelHandler : MonoBehaviour
     [SerializeField] private GameObject customizePanel = null;
     [SerializeField] private GameObject buttonPrefab = null;
     [SerializeField] private GameObject horizontalPanelPrefab = null;
+    [SerializeField] private Camera playerPreviewCamera;
 
     PlayerInfo playerInfo = null;
+    PlayerPreviewCameraController playerPreviewCameraController = null;
+    PlayerInfoDisplayer playerInfoDisplayer = null;
 
     Constants.CustomizeItem currentTab = Constants.CustomizeItem.None;
 
@@ -18,14 +21,17 @@ public class CustomizePanelHandler : MonoBehaviour
     {
         if (playerInfo == null)
         {
-            playerInfo = NetworkClient.connection.identity.GetComponent<PlayerInfo>();
+            playerInfo = NetworkClient.connection.identity.GetComponent<PlayerInfo>();         
+            playerPreviewCameraController = NetworkClient.connection.identity.GetComponent<PlayerPreviewCameraController>();
         }
+        playerPreviewCameraController.ChangePreviewCameraStatus(true);
         OnTabChange(Constants.CustomizeItem.Color);
     }
 
     private void OnDisable()
     {
         OnTabChange(Constants.CustomizeItem.None);
+        playerPreviewCameraController.ChangePreviewCameraStatus(false);
     }
 
     public void OnTabChange(Constants.CustomizeItem tab)
@@ -49,10 +55,10 @@ public class CustomizePanelHandler : MonoBehaviour
         switch (tab)
         {
             case Constants.CustomizeItem.Color:
-                foreach ((Color color, bool available) tuple in LobbyManager.singleton.GetColors())
+                foreach ((Color color, int playerId) tuple in LobbyManager.singleton.GetColors())
                 {
-                    bool selected = tuple.color == playerInfo.GetTempColor();
-                    buttons.Add(CreateButton(tuple.color, null, selected || tuple.available, selected));
+                    bool selected = tuple.playerId == playerInfo.GetPlayerId();
+                    buttons.Add(CreateButton(tuple.color, null, selected || tuple.playerId == -1, selected));
                 }
                 break;
         }
@@ -121,7 +127,7 @@ public class CustomizePanelHandler : MonoBehaviour
         return btn;
     }
     
-    private void OnColorAvailabilityChanges(SyncDictionary<Color, bool>.Operation op, Color color, bool available)
+    private void OnColorAvailabilityChanges(SyncDictionary<Color, int>.Operation op, Color color, int playerId)
     {
         if (currentTab == Constants.CustomizeItem.Color)
         {
@@ -129,11 +135,9 @@ public class CustomizePanelHandler : MonoBehaviour
             {
                 if(color == child.GetColor())
                 {
-                    bool selected = child.GetColor() == playerInfo.GetTempColor();
+                    bool selected = playerInfo.GetPlayerId() == playerId;
 
-                    Debug.Log(playerInfo.GetTempColor());
-
-                    child.ChangeAvailability(available || selected);
+                    child.ChangeAvailability(playerId == -1 || selected);
                     child.ChangeSelected(selected);
                 }
             }
@@ -143,5 +147,15 @@ public class CustomizePanelHandler : MonoBehaviour
     private void SetColor(Color color)
     {
         playerInfo?.SetDisplayColor(color);
+    }
+
+    public void StartPreviewRotate(bool left)
+    {
+        playerPreviewCameraController.ChangeRotation(left ? Constants.RotationType.Left : Constants.RotationType.Right);
+    }
+
+    public void StopPreviewRotate()
+    {
+        playerPreviewCameraController.ChangeRotation(Constants.RotationType.None);
     }
 }

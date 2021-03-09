@@ -9,6 +9,8 @@ public class CustomNetworkManager : NetworkManager
 {
     [SerializeField] private GameOverHandler gameOverHandler = null;
 
+    private int nextPlayerId = 0;
+
     private bool isGameInProgress = false;
 
     public List<Player> Players { get; } = new List<Player>();
@@ -76,6 +78,10 @@ public class CustomNetworkManager : NetworkManager
         PlayerInfo playerInfo = conn.identity.GetComponent<PlayerInfo>();
 
         playerInfo.SetDisplayName($"Player {Players.Count}");
+        playerInfo.SetPlayerId(nextPlayerId);
+        playerInfo.SetDisplayColor(LobbyManager.singleton.GetNextColor(nextPlayerId));
+
+        nextPlayerId++;
 
         player.SetPartyOwner(Players.Count == 1);
 
@@ -110,6 +116,8 @@ public class CustomNetworkManager : NetworkManager
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
+
+        Debug.Log("Exit");
 
         ClientOnDisconnected?.Invoke();
     }

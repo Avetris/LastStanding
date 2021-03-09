@@ -7,7 +7,7 @@ public class PlayerInfoDisplayer : MonoBehaviour
 {
     [SerializeField] private Renderer[] colorRenderers = new Renderer[0];
     [SerializeField] private TMP_Text nameText = null;
-    
+
     private void Awake() {
         GetComponent<PlayerInfo>().ClientOnNameUpdated += OnNameChangeHandler;
         GetComponent<PlayerInfo>().ClientOnColorUpdated += OnColorChangeHandler;
