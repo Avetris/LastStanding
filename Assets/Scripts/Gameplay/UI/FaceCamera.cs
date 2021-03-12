@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FaceCamera : MonoBehaviour
 {
@@ -9,8 +7,12 @@ public class FaceCamera : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        mainCameraTransform = Camera.main.transform;
+        ResetMainCamera();
+    }
 
+    public void ResetMainCamera()
+    {
+        mainCameraTransform = Camera.main.transform;
     }
 
     private void LateUpdate()

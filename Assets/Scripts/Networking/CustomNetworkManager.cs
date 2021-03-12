@@ -13,7 +13,7 @@ public class CustomNetworkManager : NetworkManager
 
     private bool isGameInProgress = false;
 
-    public List<Player> Players { get; } = new List<Player>();
+    private List<Player> Players { get; } = new List<Player>();
 
     public static event Action ClientOnConnected;
     public static event Action ClientOnDisconnected;
@@ -30,6 +30,19 @@ public class CustomNetworkManager : NetworkManager
     }
 
     #region Server
+    [Server]
+    public void ChangePlayerList(bool add, Player player)
+    {
+        if (add)
+        {
+            Players.Add(player);
+        }
+        else
+        {
+            Players.Remove(player);
+        }
+        PlayerNumberUpdated?.Invoke(Players.Count);
+    }
 
     public override void OnServerConnect(NetworkConnection conn)
     {
@@ -38,20 +51,13 @@ public class CustomNetworkManager : NetworkManager
         conn.Disconnect();
     }
 
-    public override void OnServerDisconnect(NetworkConnection conn)
-    {
-        Player player = conn.identity.GetComponent<Player>();
-
-        Players.Remove(player);
-
-        PlayerNumberUpdated?.Invoke(Players.Count);
-
-        base.OnServerDisconnect(conn);
-    }
-
     public override void OnStopServer()
     {
-        Destroy(LobbyManager.singleton.gameObject);
+        LobbyManager lobbyManager = LobbyManager.singleton;
+        if (lobbyManager != null)
+        {
+            Destroy(lobbyManager.gameObject);
+        }
 
         Players.Clear();
 
@@ -60,11 +66,11 @@ public class CustomNetworkManager : NetworkManager
 
     public void StartGame()
     {
-        if (Players.Count < 2) { return; }
+        if (!LobbyManager.singleton.CanStartGame()) { return; }
 
         isGameInProgress = true;
 
-        ServerChangeScene("Scene_Map");
+        ServerChangeScene("GameScene");
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn)

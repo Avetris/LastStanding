@@ -1,11 +1,35 @@
+using UnityEngine;
 using Mirror;
 using System;
+using UnityEngine.SceneManagement;
 
 public class Player : NetworkBehaviour
 {
+    [SerializeField] private GameObject playerCamera;
+
+    [SyncVar(hook = nameof(AuthorityHandlePartyOwnerStateUpdated))]
     private bool isPartyOwner = false;
 
     public static event Action<bool> AuthorityOnPartyOwnerStateUpdated;
+
+    private void Start()
+    {       
+        SceneManager.activeSceneChanged += OnSceneChanged;
+        Scene currentScene = SceneManager.GetActiveScene();
+        OnSceneChanged(currentScene, currentScene);
+    }
+    
+    private void OnSceneChanged(Scene oldScene, Scene newScene)
+    {        
+        if(this == null || gameObject == null){ return; }
+
+        GetComponentInChildren<FaceCamera>().ResetMainCamera();
+        playerCamera.SetActive(false);
+        if(hasAuthority)
+        {
+            playerCamera.SetActive(true);
+        }
+    }
 
     public void SetPartyOwner(bool partyOwner)
     {
@@ -17,10 +41,15 @@ public class Player : NetworkBehaviour
     [Command]
     public void CmdStartGame()
     {
-        if(!isPartyOwner || !hasAuthority) { return; }
+        if (!isPartyOwner || !hasAuthority) { return; }
 
-        ((CustomNetworkManager) NetworkManager.singleton).StartGame();
-    }   
+        ((CustomNetworkManager)NetworkManager.singleton).StartGame();
+    }
+
+    public override void OnStartServer()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     #endregion
 
@@ -28,24 +57,24 @@ public class Player : NetworkBehaviour
     public override void OnStartClient()
     {
         if (NetworkServer.active) { return; }
-
+        
         DontDestroyOnLoad(gameObject);
 
-        ((CustomNetworkManager)NetworkManager.singleton).Players.Add(this);
+        ((CustomNetworkManager)NetworkManager.singleton).ChangePlayerList(true, this);
     }
 
     public override void OnStopClient()
     {
         if (!isClientOnly) { return; }
 
-        ((CustomNetworkManager)NetworkManager.singleton).Players.Remove(this);
+        ((CustomNetworkManager)NetworkManager.singleton).ChangePlayerList(false, this);
 
         if (!hasAuthority) { return; }
     }
 
     private void AuthorityHandlePartyOwnerStateUpdated(bool oldState, bool newState)
     {
-        if(!hasAuthority) { return; }
+        if (!hasAuthority) { return; }
 
         AuthorityOnPartyOwnerStateUpdated?.Invoke(newState);
     }

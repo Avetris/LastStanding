@@ -1,3 +1,4 @@
+using kcp2k;
 using UnityEngine;
 
 public class PlayerPreviewCameraController : MonoBehaviour
@@ -13,11 +14,7 @@ public class PlayerPreviewCameraController : MonoBehaviour
         playerPreviewCamera.gameObject.SetActive(enable);
         if (enable)
         {
-            Vector3 relativePos = characterTransform.position - playerPreviewCamera.transform.position;
-
-            // the second argument, upwards, defaults to Vector3.up
-            Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
-            playerPreviewCamera.rotation = rotation;
+            playerPreviewCamera.rotation = Utils.GetRotationBetweenVectors(playerPreviewCamera.transform.position, characterTransform.position);
         }        
     }
 

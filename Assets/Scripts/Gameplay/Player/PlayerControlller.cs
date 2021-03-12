@@ -5,8 +5,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerControlller : NetworkBehaviour
 {
-    [SerializeField] private float speed = 10f;
-    [SerializeField] private float rotationSpeed = 3.0f;
+    [SerializeField] private float speed = 200f;
+    [SerializeField] private float rotationSpeed = 5f;
     [SerializeField] private CharacterController controller = null;
     
     Controls controls;
@@ -59,7 +59,7 @@ public class PlayerControlller : NetworkBehaviour
  
         Vector3 move = new Vector3(0, 0, direction.y * Time.deltaTime);
         move = controller.transform.TransformDirection(move);
-        controller.Move(move * currentSpeed);
+        controller.SimpleMove(move * currentSpeed);
 
         controller.transform.Rotate(rotation);
     }

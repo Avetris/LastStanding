@@ -28,14 +28,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1687258581}
-  m_LocalRotation: {x: 0.49999762, y: 0.0026783345, z: -0.0015463372, w: 0.8660213}
-  m_LocalPosition: {x: 0, y: 14, z: -8}
+  m_LocalRotation: {x: 0.25401434, y: -0, z: -0, w: 0.96720046}
+  m_LocalPosition: {x: 0, y: 11.77, z: -19.09}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6487674929188343565}
   m_Father: {fileID: 3406357852826298382}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 60, y: 0.3544, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &1687258584
 Camera:
   m_ObjectHideFlags: 0
@@ -137,13 +137,13 @@ MonoBehaviour:
   m_StreamingVersion: 20170927
   m_Priority: 10
   m_StandbyUpdate: 2
-  m_LookAt: {fileID: 0}
-  m_Follow: {fileID: 0}
+  m_LookAt: {fileID: 2392362458191580555}
+  m_Follow: {fileID: 2392362458191580555}
   m_Lens:
-    FieldOfView: 40
+    FieldOfView: 30
     OrthographicSize: 10
     NearClipPlane: 0.1
-    FarClipPlane: 5000
+    FarClipPlane: 1000
     Dutch: 0
     LensShift: {x: 0, y: 0}
   m_Transitions:
@@ -392,7 +392,6 @@ GameObject:
   - component: {fileID: 3406357852826298382}
   - component: {fileID: 1141305729269828605}
   - component: {fileID: 906580755122293961}
-  - component: {fileID: 4737903311103507662}
   - component: {fileID: 9044527229129275606}
   - component: {fileID: 590386592561319504}
   - component: {fileID: 1134118127387221986}
@@ -458,22 +457,6 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!114 &4737903311103507662
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 706770072257986932}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a319de9044c06b4b998fc0645341680, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  playerPosition: {fileID: 2392362458191580555}
-  cameraPosition: {fileID: 1687258585}
 --- !u!114 &9044527229129275606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -507,6 +490,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  playerCamera: {fileID: 1687258581}
 --- !u!114 &1134118127387221986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -521,8 +505,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  speed: 10
-  rotationSpeed: 3
+  speed: 200
+  rotationSpeed: 5
   controller: {fileID: 1559342158}
 --- !u!114 &8383501564188695386
 MonoBehaviour:
@@ -553,6 +537,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  character: {fileID: 7460436239224338724}
   playerId: 0
 --- !u!114 &3413577384234140506
 MonoBehaviour:
@@ -1493,6 +1478,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6487674929188343565}
   - component: {fileID: 5873258333845973419}
+  - component: {fileID: 3969810091071490360}
+  - component: {fileID: 6915381689173137112}
   m_Layer: 0
   m_Name: cm
   m_TagString: Untagged
@@ -1526,3 +1513,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3969810091071490360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8463962948560831031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa7155796051b734daa718462081dc5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BindingMode: 0
+  m_FollowOffset: {x: 0, y: 10.77, z: -15}
+  m_XDamping: 13.18
+  m_YDamping: 3.76
+  m_ZDamping: 3.38
+  m_AngularDampingMode: 0
+  m_PitchDamping: 0
+  m_YawDamping: 0
+  m_RollDamping: 0
+  m_AngularDamping: 0
+--- !u!114 &6915381689173137112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8463962948560831031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4044717213e31446939f7bd49c896ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackedObjectOffset: {x: 0, y: 0, z: 0}
+  m_LookaheadTime: 0
+  m_LookaheadSmoothing: 10
+  m_LookaheadIgnoreY: 0
+  m_HorizontalDamping: 0.58
+  m_VerticalDamping: 0.5
+  m_ScreenX: 0.5
+  m_ScreenY: 0.5
+  m_DeadZoneWidth: 0
+  m_DeadZoneHeight: 0
+  m_SoftZoneWidth: 0.8
+  m_SoftZoneHeight: 0.8
+  m_BiasX: 0
+  m_BiasY: 0
+  m_CenterOnActivate: 1

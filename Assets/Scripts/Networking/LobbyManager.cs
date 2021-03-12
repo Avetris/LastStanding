@@ -22,6 +22,7 @@ public class LobbyManager : NetworkBehaviour
     }
     #endregion
 
+    private int minimunPlayers = 1;
     private int maxPlayers = 10;
     private int currentPlayers;
     
@@ -43,6 +44,31 @@ public class LobbyManager : NetworkBehaviour
         {new Color(0.83f, 0.69f, 0.22f), -1},
     };
 
+    public static event Action<bool> OnStartGameStatusChanges;
+    
+
+    private void Start()
+    {
+        CustomNetworkManager.PlayerNumberUpdated += HandleClientConnect;
+    }
+
+    private void OnDestroy()
+    {
+        CustomNetworkManager.PlayerNumberUpdated -= HandleClientConnect;
+    }    
+
+    [Server]
+    private void HandleClientConnect(int playerCount)
+    {
+        currentPlayers = playerCount;
+        OnStartGameStatusChanges?.Invoke(CanStartGame());
+    }
+
+    public bool CanStartGame()
+    {
+        return currentPlayers >= minimunPlayers;
+    }
+
     public void UpdateColorChangeListeners(bool add, SyncDictionary<Color, int>.SyncDictionaryChanged callback)
     {
         if (add)
@@ -60,16 +86,6 @@ public class LobbyManager : NetworkBehaviour
         return playerColors.Select(x => (x.Key, x.Value)).ToList();
     }    
 
-    private void Start()
-    {
-        CustomNetworkManager.PlayerNumberUpdated += HandleClientConnect;
-    }
-
-    private void OnDestroy()
-    {
-        CustomNetworkManager.PlayerNumberUpdated -= HandleClientConnect;
-    }
-
     [Server]
     public Color GetNextColor(int playerId)
     {
@@ -79,6 +95,7 @@ public class LobbyManager : NetworkBehaviour
             if (entry.Value == -1)
             {
                 col = entry.Key;
+                break;
             }
         }
         playerColors[col] = playerId;
@@ -107,11 +124,5 @@ public class LobbyManager : NetworkBehaviour
         }
 
         return can;
-    }
-
-    [Server]
-    private void HandleClientConnect(int playerCount)
-    {
-        bool enabled = playerCount >= 2;
     }
 }

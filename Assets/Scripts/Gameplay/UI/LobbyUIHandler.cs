@@ -11,6 +11,7 @@ public class LobbyUIHandler : NetworkBehaviour
     private void Start()
     {
         Player.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
+        LobbyManager.OnStartGameStatusChanges += HandleStartGameStatus;
 
         startGameButton.interactable = false;
     }
@@ -18,11 +19,17 @@ public class LobbyUIHandler : NetworkBehaviour
     private void OnDestroy()
     {
         Player.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
+        LobbyManager.OnStartGameStatusChanges -= HandleStartGameStatus;
     }
 
     private void AuthorityHandlePartyOwnerStateUpdated(bool state)
     {
         startGameButton.gameObject.SetActive(state);
+    }
+
+    public void HandleStartGameStatus(bool status)
+    {
+        RpcChangeStartGameStatus(status);
     }
 
     [ClientRpc]

@@ -2,6 +2,9 @@ using System;
 using UnityEngine;
 using Mirror;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using System.Collections;
 
 public class CustomizePanelHandler : MonoBehaviour
 {
@@ -10,6 +13,8 @@ public class CustomizePanelHandler : MonoBehaviour
     [SerializeField] private GameObject buttonPrefab = null;
     [SerializeField] private GameObject horizontalPanelPrefab = null;
     [SerializeField] private Camera playerPreviewCamera;
+
+    [SerializeField] private Button selectedTabOnEnable = null;
 
     PlayerInfo playerInfo = null;
     PlayerPreviewCameraController playerPreviewCameraController = null;
@@ -25,13 +30,27 @@ public class CustomizePanelHandler : MonoBehaviour
             playerPreviewCameraController = NetworkClient.connection.identity.GetComponent<PlayerPreviewCameraController>();
         }
         playerPreviewCameraController.ChangePreviewCameraStatus(true);
-        OnTabChange(Constants.CustomizeItem.Color);
+
+        StartCoroutine(PressButton());
+    }
+
+    private IEnumerator PressButton()
+    {
+        yield return new WaitForSeconds(0.001f);
+
+        selectedTabOnEnable.onClick.Invoke();
+        selectedTabOnEnable.Select();
     }
 
     private void OnDisable()
     {
         OnTabChange(Constants.CustomizeItem.None);
         playerPreviewCameraController.ChangePreviewCameraStatus(false);
+    }
+
+    public void ChangeTab(int tab)
+    {
+        OnTabChange((Constants.CustomizeItem) tab);
     }
 
     public void OnTabChange(Constants.CustomizeItem tab)
@@ -66,6 +85,7 @@ public class CustomizePanelHandler : MonoBehaviour
         {
             CreateTab(buttons);
         }
+        scrollPanelRect.position = new Vector3(scrollPanelRect.position.x, 0, scrollPanelRect.position.z);
     }
 
     public void CreateTab(List<GameObject> buttons)

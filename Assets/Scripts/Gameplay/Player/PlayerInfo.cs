@@ -10,6 +10,8 @@ public struct CharacterData
 
 public class PlayerInfo : NetworkBehaviour
 {
+    [SerializeField] private GameObject character;
+
     [SyncVar]
     public int playerId = 0;
 
@@ -58,6 +60,11 @@ public class PlayerInfo : NetworkBehaviour
     public int GetPlayerId()
     {
         return playerId;
+    }    
+
+    public Vector3 GetPlayerPosition()
+    {
+        return character.transform.position;
     }
     #endregion
 
@@ -96,11 +103,13 @@ public class PlayerInfo : NetworkBehaviour
         ClientOnColorUpdated?.Invoke(newColor);
     }
 
-    public override void OnStopClient()
+    public override void OnStopServer()
     {
-        if (!isClientOnly) { return; }
-
-        LobbyManager.singleton.CanSetColor(playerId, displayColor, Color.clear);
+        if(LobbyManager.singleton != null)
+        {
+            LobbyManager.singleton.CanSetColor(playerId, displayColor, Color.clear);
+        }
+        base.OnStopServer();
     }
 
     #endregion
