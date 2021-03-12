@@ -18,7 +18,7 @@ public class ArrowMovement : NetworkBehaviour
 
     // Use this for initialization
 
-    public void Shoot(Vector3 target, Vector3 origin, float time)
+    public void Shoot(Vector3 origin, Vector3 target, float time)
     {
         rigidbody = GetComponent<Rigidbody>();
 
@@ -83,8 +83,8 @@ public class ArrowMovement : NetworkBehaviour
 
     private void ApplyCollision(string tag, string name, Transform parentTransform)
     {
-        if(tag == "Arrow") { return; }
-        if (collisionOccurred){ return; }
+        if (tag == "Arrow") { return; }
+        if (collisionOccurred) { return; }
         rigidbody.velocity = Vector3.zero;
         // disable the rigidbody
         // rigidbody.isKinematic = true;
@@ -92,7 +92,7 @@ public class ArrowMovement : NetworkBehaviour
         // and a collision occurred
         collisionOccurred = true;
 
-        if(name == "Character")
+        if (name == "Character")
         {
             transform.SetParent(parentTransform, true);
         }
