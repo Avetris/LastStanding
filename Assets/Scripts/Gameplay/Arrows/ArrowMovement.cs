@@ -6,9 +6,7 @@ using UnityEditor;
 
 public class ArrowMovement : NetworkBehaviour
 {
-    [SerializeField] private float speed = 10f;
-
-    private Rigidbody rigidbody = null;
+    private Rigidbody arrowRigidbody = null;
 
     // register collision
     bool collisionOccurred;
@@ -20,11 +18,11 @@ public class ArrowMovement : NetworkBehaviour
 
     public void Shoot(Vector3 origin, Vector3 target, float time)
     {
-        rigidbody = GetComponent<Rigidbody>();
+        arrowRigidbody = GetComponent<Rigidbody>();
 
         Vector3 initialVelocity = CalculateInitialVelocity(target, origin, time);
 
-        rigidbody.AddForce(initialVelocity, ForceMode.VelocityChange);
+        arrowRigidbody.AddForce(initialVelocity, ForceMode.VelocityChange);
     }
 
     private Vector3 CalculateInitialVelocity(Vector3 target, Vector3 origin, float time)
@@ -46,20 +44,18 @@ public class ArrowMovement : NetworkBehaviour
         return result;
     }
 
-
-
     [ServerCallback]
     void Update()
     {
         //this part of update is only executed, if a rigidbody is present
         // the rigidbody is added when the arrow is shot (released from the bowstring)
-        if (rigidbody != null && !collisionOccurred)
+        if (arrowRigidbody != null && !collisionOccurred)
         {
             // do we fly actually?
-            if (rigidbody.velocity != Vector3.zero)
+            if (arrowRigidbody.velocity != Vector3.zero)
             {
                 // get the actual velocity
-                Vector3 vel = rigidbody.velocity;
+                Vector3 vel = arrowRigidbody.velocity;
                 // calc the rotation from x and y velocity via a simple atan2
                 float angleZ = Mathf.Atan2(vel.y, vel.x) * Mathf.Rad2Deg;
                 float angleY = Mathf.Atan2(vel.z, vel.x) * Mathf.Rad2Deg;
@@ -85,10 +81,10 @@ public class ArrowMovement : NetworkBehaviour
     {
         if (tag == "Arrow") { return; }
         if (collisionOccurred) { return; }
-        rigidbody.velocity = Vector3.zero;
+        arrowRigidbody.velocity = Vector3.zero;
         // disable the rigidbody
         // rigidbody.isKinematic = true;
-        rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+        arrowRigidbody.constraints = RigidbodyConstraints.FreezeAll;
         // and a collision occurred
         collisionOccurred = true;
 

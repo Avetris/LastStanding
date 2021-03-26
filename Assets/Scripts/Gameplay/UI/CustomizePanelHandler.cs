@@ -20,7 +20,7 @@ public class CustomizePanelHandler : MonoBehaviour
     PlayerPreviewCameraController playerPreviewCameraController = null;
     PlayerInfoDisplayer playerInfoDisplayer = null;
 
-    Constants.CustomizeItem currentTab = Constants.CustomizeItem.None;
+    Enumerators.CustomizeItem currentTab = Enumerators.CustomizeItem.None;
 
     private void OnEnable()
     {
@@ -44,28 +44,28 @@ public class CustomizePanelHandler : MonoBehaviour
 
     private void OnDisable()
     {
-        OnTabChange(Constants.CustomizeItem.None);
+        OnTabChange(Enumerators.CustomizeItem.None);
         playerPreviewCameraController.ChangePreviewCameraStatus(false);
     }
 
     public void ChangeTab(int tab)
     {
-        OnTabChange((Constants.CustomizeItem) tab);
+        OnTabChange((Enumerators.CustomizeItem) tab);
     }
 
-    public void OnTabChange(Constants.CustomizeItem tab)
+    public void OnTabChange(Enumerators.CustomizeItem tab)
     {
         if (tab == currentTab) { return; }
         
         ClearTab();
 
-        if (currentTab == Constants.CustomizeItem.Color)
+        if (currentTab == Enumerators.CustomizeItem.Color)
         {
-            LobbyManager.singleton.UpdateColorChangeListeners(false, OnColorAvailabilityChanges);
+            LobbyRoomManager.singleton.UpdateColorChangeListeners(false, OnColorAvailabilityChanges);
         }
-        else if (tab == Constants.CustomizeItem.Color)
+        else if (tab == Enumerators.CustomizeItem.Color)
         {
-            LobbyManager.singleton.UpdateColorChangeListeners(true, OnColorAvailabilityChanges);
+            LobbyRoomManager.singleton.UpdateColorChangeListeners(true, OnColorAvailabilityChanges);
         }
 
         currentTab = tab;
@@ -73,8 +73,8 @@ public class CustomizePanelHandler : MonoBehaviour
         List<GameObject> buttons = new List<GameObject>();
         switch (tab)
         {
-            case Constants.CustomizeItem.Color:
-                foreach ((Color color, int playerId) tuple in LobbyManager.singleton.GetColors())
+            case Enumerators.CustomizeItem.Color:
+                foreach ((Color color, int playerId) tuple in LobbyRoomManager.singleton.GetColors())
                 {
                     bool selected = tuple.playerId == playerInfo.GetPlayerId();
                     buttons.Add(CreateButton(tuple.color, null, selected || tuple.playerId == -1, selected));
@@ -132,7 +132,7 @@ public class CustomizePanelHandler : MonoBehaviour
         CustomizeButtonHandler handler = btn.GetComponent<CustomizeButtonHandler>();
         handler.SetItemType(currentTab);
         handler.SetPlayerInfo(playerInfo);
-        if (currentTab == Constants.CustomizeItem.Color)
+        if (currentTab == Enumerators.CustomizeItem.Color)
         {
             handler.SetColor(color);
         }
@@ -149,7 +149,7 @@ public class CustomizePanelHandler : MonoBehaviour
     
     private void OnColorAvailabilityChanges(SyncDictionary<Color, int>.Operation op, Color color, int playerId)
     {
-        if (currentTab == Constants.CustomizeItem.Color)
+        if (currentTab == Enumerators.CustomizeItem.Color)
         {
             foreach(CustomizeButtonHandler child in customizePanel.GetComponentsInChildren<CustomizeButtonHandler>())
             {
@@ -171,11 +171,11 @@ public class CustomizePanelHandler : MonoBehaviour
 
     public void StartPreviewRotate(bool left)
     {
-        playerPreviewCameraController.ChangeRotation(left ? Constants.RotationType.Left : Constants.RotationType.Right);
+        playerPreviewCameraController.ChangeRotation(left ? Enumerators.RotationType.Left : Enumerators.RotationType.Right);
     }
 
     public void StopPreviewRotate()
     {
-        playerPreviewCameraController.ChangeRotation(Constants.RotationType.None);
+        playerPreviewCameraController.ChangeRotation(Enumerators.RotationType.None);
     }
 }

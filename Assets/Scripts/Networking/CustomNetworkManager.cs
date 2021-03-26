@@ -4,12 +4,15 @@ using UnityEngine;
 using Mirror;
 using System;
 using UnityEngine.SceneManagement;
+using UnityEngine.Localization.Settings;
 
 public class CustomNetworkManager : NetworkManager
 {
     [SerializeField] private GameOverHandler gameOverHandler = null;
 
     private int nextPlayerId = 0;
+
+    public Dictionary<Enumerators.Variable, string> gameSetting = new Dictionary<Enumerators.Variable, string>();
 
     private bool isGameInProgress = false;
 
@@ -18,6 +21,7 @@ public class CustomNetworkManager : NetworkManager
     public static event Action ClientOnConnected;
     public static event Action ClientOnDisconnected;
     public static event Action<int> PlayerNumberUpdated;
+    public static event Action<Enumerators.Variable> GameSettingsUpdated;
 
     public override void Start()
     {
@@ -53,10 +57,10 @@ public class CustomNetworkManager : NetworkManager
 
     public override void OnStopServer()
     {
-        LobbyManager lobbyManager = LobbyManager.singleton;
-        if (lobbyManager != null)
+        LobbyRoomManager lobbyRoomManager = LobbyRoomManager.singleton;
+        if (lobbyRoomManager != null)
         {
-            Destroy(lobbyManager.gameObject);
+            Destroy(lobbyRoomManager.gameObject);
         }
 
         Players.Clear();
@@ -66,7 +70,7 @@ public class CustomNetworkManager : NetworkManager
 
     public void StartGame()
     {
-        if (!LobbyManager.singleton.CanStartGame()) { return; }
+        if (!LobbyRoomManager.singleton.CanStartGame()) { return; }
 
         isGameInProgress = true;
 
@@ -85,7 +89,7 @@ public class CustomNetworkManager : NetworkManager
 
         playerInfo.SetDisplayName($"Player {Players.Count}");
         playerInfo.SetPlayerId(nextPlayerId);
-        playerInfo.SetDisplayColor(LobbyManager.singleton.GetNextColor(nextPlayerId));
+        playerInfo.SetDisplayColor(LobbyRoomManager.singleton.GetNextColor(nextPlayerId));
 
         nextPlayerId++;
 
@@ -108,6 +112,24 @@ public class CustomNetworkManager : NetworkManager
         }
     }
 
+    public void ChangeSetting<T>(Enumerators.Variable variable, T newValue)
+    {
+        gameSetting[variable] = newValue.ToString();
+        GameSettingsUpdated?.Invoke(variable);
+    }
+
+    public T GetSetting<T>(Enumerators.Variable variable, T defaultValue)
+    {
+        if (gameSetting.ContainsKey(variable))
+        {
+            return (T) Convert.ChangeType(gameSetting[variable], typeof(T));
+        }
+        else
+        {
+            return defaultValue;
+        }
+    }
+
     #endregion
 
     #region Client
@@ -122,8 +144,9 @@ public class CustomNetworkManager : NetworkManager
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
-
-        Debug.Log("Exit");
+       
+        string message = LocalizeManager.singleton.GetText("max_players_limit");
+        EventManager.singleton.CreateEvent<string>(Constants.MenuScene, EventType.Message, message);
 
         ClientOnDisconnected?.Invoke();
     }

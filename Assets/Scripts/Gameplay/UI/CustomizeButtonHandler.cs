@@ -14,14 +14,14 @@ public class CustomizeButtonHandler : MonoBehaviour
 
     private PlayerInfo playerInfo;
 
-    public Constants.CustomizeItem itemType;
+    public Enumerators.CustomizeItem itemType;
 
     public void SetPlayerInfo(PlayerInfo playerInfo)
     {
         this.playerInfo = playerInfo;
     }
 
-    public void SetItemType(Constants.CustomizeItem type)
+    public void SetItemType(Enumerators.CustomizeItem type)
     {
         itemType = type;
     }
@@ -68,7 +68,7 @@ public class CustomizeButtonHandler : MonoBehaviour
     {
         switch(itemType)
         {
-            case Constants.CustomizeItem.Color:
+            case Enumerators.CustomizeItem.Color:
                 playerInfo.CmdSetDisplayColor(image.color);
                 break;
         }

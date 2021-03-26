@@ -3,7 +3,6 @@ using Mirror;
 using System.Linq;
 using System.Collections.Generic;
 using System;
-using System.Collections;
 
 public class LobbyManager : NetworkBehaviour
 {
@@ -44,8 +43,12 @@ public class LobbyManager : NetworkBehaviour
         {new Color(0.83f, 0.69f, 0.22f), -1},
     };
 
+
+    #region Events
     public static event Action<bool> OnStartGameStatusChanges;
-    
+
+    #endregion
+   
 
     private void Start()
     {

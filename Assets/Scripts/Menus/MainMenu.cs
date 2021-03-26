@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using TMPro;
 // using Steamworks;
 using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
     [SerializeField] private GameObject landingPagePanel = null;
+    [SerializeField] private GameObject errorDialog = null;
 
     [SerializeField] private bool useSteam = false;
 
@@ -16,12 +18,49 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
-        if(!useSteam) { return; }
+        EventManager.OnEventUpdated += OnEventUpdatedHandler;
+
+        GetEventMessages();
+
+        if (!useSteam) { return; }
 
         // lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
         // gameLobbyGameRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequested);
         // lobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEnter);
     }
+
+    private void OnDestroy()
+    {
+        EventManager.OnEventUpdated -= OnEventUpdatedHandler;
+    }
+
+    public void OnEventUpdatedHandler(string sceneName)
+    {
+       
+         if(sceneName == Constants.MenuScene)
+        {
+            GetEventMessages();
+        }
+    }
+
+    private void GetEventMessages()
+    {
+        List<CustomEvent> customEvents = EventManager.singleton.GetEventOfType(Constants.MenuScene, EventType.All, true);
+        foreach(CustomEvent customEvent in customEvents)
+        {
+            if(customEvent.GetEventType() == EventType.Message)
+            {
+                errorDialog.GetComponentInChildren<TMP_Text>().text = customEvent.GetValue<string>();
+                errorDialog.SetActive(true);
+            }
+        }
+    }
+
+    private void PrintErrorDialog(string text)
+    {
+
+    }
+
 
     public void HostLobby()
     {
@@ -56,7 +95,7 @@ public class MainMenu : MonoBehaviour
     // {
     //     SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
     // }
-    
+
     // private void OnLobbyEnter(LobbyEnter_t callback)
     // {
     //     if(NetworkServer.active) { return; }

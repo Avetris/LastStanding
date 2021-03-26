@@ -285,6 +285,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionButton: {fileID: 7312772894857577345}
+  settingsButton: {fileID: 7312772895777983656}
   playerCollisionHandler: {fileID: 3413577384234140506}
 --- !u!1 &621556360679589662
 GameObject:
@@ -508,6 +509,7 @@ MonoBehaviour:
   speed: 200
   rotationSpeed: 5
   controller: {fileID: 1559342158}
+  playerPreviewCameraController: {fileID: 2750588318136380181}
 --- !u!114 &8383501564188695386
 MonoBehaviour:
   m_ObjectHideFlags: 0

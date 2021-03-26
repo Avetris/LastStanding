@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
 
-public class LobbyUIHandler : NetworkBehaviour
+public class LobbyRoomUIHandler : NetworkBehaviour
 {
 
     [SerializeField] private Button startGameButton = null;
@@ -11,7 +11,7 @@ public class LobbyUIHandler : NetworkBehaviour
     private void Start()
     {
         Player.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
-        LobbyManager.OnStartGameStatusChanges += HandleStartGameStatus;
+        LobbyRoomManager.OnStartGameStatusChanges += HandleStartGameStatus;
 
         startGameButton.interactable = false;
     }
@@ -19,7 +19,7 @@ public class LobbyUIHandler : NetworkBehaviour
     private void OnDestroy()
     {
         Player.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
-        LobbyManager.OnStartGameStatusChanges -= HandleStartGameStatus;
+        LobbyRoomManager.OnStartGameStatusChanges -= HandleStartGameStatus;
     }
 
     private void AuthorityHandlePartyOwnerStateUpdated(bool state)
@@ -38,24 +38,8 @@ public class LobbyUIHandler : NetworkBehaviour
         startGameButton.interactable = status;
     }
 
-
     public void StartGame()
     {
         NetworkClient.connection.identity.GetComponent<Player>().CmdStartGame();
     }
-
-    public void LeaveLobby()
-    {
-        if (NetworkServer.active && NetworkClient.isConnected)
-        {
-            NetworkManager.singleton.StopHost();
-        }
-        else
-        {
-            NetworkManager.singleton.StopClient();
-
-            SceneManager.LoadScene(0);
-        }
-    }
-
 }

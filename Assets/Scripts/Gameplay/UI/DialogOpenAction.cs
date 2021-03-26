@@ -6,6 +6,6 @@ public class DialogOpenAction : ActionObject
 {
     public override void OnClick()
     {
-        dialogDisplayHandler.OpenPanel(Constants.DialogType.Customize);
+        dialogDisplayHandler.OpenPanel(Enumerators.DialogType.Customize);
     }
 }

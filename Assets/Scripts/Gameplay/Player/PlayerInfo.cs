@@ -23,11 +23,11 @@ public class PlayerInfo : NetworkBehaviour
     public event Action<Color> ClientOnColorUpdated;
     public event Action<string> ClientOnNameUpdated;
 
-    private SyncDictionary<Constants.CustomizeItem, CharacterData> characterData = new SyncDictionary<Constants.CustomizeItem, CharacterData>();
+    private SyncDictionary<Enumerators.CustomizeItem, CharacterData> characterData = new SyncDictionary<Enumerators.CustomizeItem, CharacterData>();
 
     #region Getters / Setters
 
-    public SyncDictionary<Constants.CustomizeItem, CharacterData> GetCharacterData()
+    public SyncDictionary<Enumerators.CustomizeItem, CharacterData> GetCharacterData()
     {
         return characterData;
     }
@@ -82,7 +82,7 @@ public class PlayerInfo : NetworkBehaviour
     {
         if (!hasAuthority && !isServer) { return; }
 
-        bool canChange = LobbyManager.singleton.CanSetColor(playerId, displayColor, newColor);
+        bool canChange = LobbyRoomManager.singleton.CanSetColor(playerId, displayColor, newColor);
 
         if (canChange)
         {
@@ -105,9 +105,9 @@ public class PlayerInfo : NetworkBehaviour
 
     public override void OnStopServer()
     {
-        if(LobbyManager.singleton != null)
+        if(LobbyRoomManager.singleton != null)
         {
-            LobbyManager.singleton.CanSetColor(playerId, displayColor, Color.clear);
+            LobbyRoomManager.singleton.CanSetColor(playerId, displayColor, Color.clear);
         }
         base.OnStopServer();
     }

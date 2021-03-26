@@ -8,8 +8,7 @@ using System.Linq;
 
 public class ArrowSpawnerManager : NetworkBehaviour
 {
-    [SerializeField] private GameObject[] ballistics;
-    [SerializeField] private GameObject arrowPrefab;
+    [SerializeField] private BallisticBehaviour[] ballistics;
 
     private float circlePonderation = 2f;
     private int nextBallisticToShoot = 0;
@@ -17,12 +16,14 @@ public class ArrowSpawnerManager : NetworkBehaviour
 
     private void Start() {
         player = NetworkClient.connection.identity.GetComponent<PlayerInfo>();
+
+        ballistics = FindObjectsOfType<BallisticBehaviour>();
     }
 
     private void Update() {
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            SpawnArrow(transform.position, player.GetPlayerPosition());
+            ShootNextBallistic(player.GetPlayerPosition());
         }
     }
 
@@ -43,15 +44,19 @@ public class ArrowSpawnerManager : NetworkBehaviour
 
         foreach(Vector3 pos in GetCirclePositions(radius))
         {   
-            SpawnArrow(ballistics[nextBallisticToShoot].transform.position, pos);
-
-            nextBallisticToShoot++;
-
-            if(nextBallisticToShoot >= ballistics.Length)
-            {
-                nextBallisticToShoot = 0;
-            }
+            ShootNextBallistic(pos);
         }
+    }
+
+    private void ShootNextBallistic(Vector3 pos)
+    {
+        ballistics[nextBallisticToShoot++].ShootArrow(pos);
+
+        if(nextBallisticToShoot >= ballistics.Length)
+        {
+            nextBallisticToShoot = 0;
+        }
+
     }
 
     private Vector3[] GetCirclePositions(int radius)
@@ -69,13 +74,5 @@ public class ArrowSpawnerManager : NetworkBehaviour
             positions[i] = new Vector3(x, 0, z);
         }
         return positions;
-    }
-
-    private void SpawnArrow(Vector3 from, Vector3 to)
-    {
-        Quaternion rotation = Utils.GetRotationBetweenVectors(from, to);
-        GameObject arrowInstance = Instantiate(arrowPrefab, from, rotation);
-        NetworkServer.Spawn(arrowInstance);
-        arrowInstance.GetComponent<ArrowMovement>().Shoot(from, to, 5f);
     }
 }

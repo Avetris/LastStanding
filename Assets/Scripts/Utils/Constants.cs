@@ -1,9 +1,14 @@
 public class Constants{ 
-    
-    public enum DialogType{ None, Settings, RoomSettings, Customize}
 
-    public enum CustomizeItem{ None, Color, Head, Body, Legs, Shoes}
-    
-    public enum RotationType{ None, Right, Left}
+    #region ScenesNames
+    public static string AllScenes = "AllScenes";
+    public static string MenuScene = "MenuScene";
+    public static string LobbyScene = "LobbyScene";
+    public static string GameScene = "GameScene";
+    #endregion
+
+    public static Enumerators.Languages DefaultLanguage = Enumerators.Languages.en;
+    public static int MaxPlayers = 10;
+    public static int MinPlayers = 10;
 
 }

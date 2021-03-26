@@ -9,13 +9,18 @@ public class DialogDisplayHandler : MonoBehaviour
     [SerializeField] private GameObject customizePanel = null;
     [SerializeField] private GameObject roomSettingsPanel = null;
 
-    private Constants.DialogType openedPanel = Constants.DialogType.None;
+    private Enumerators.DialogType openedPanel = Enumerators.DialogType.None;
 
     public event Action<bool> OnDialogChange;
 
     private void Start()
     {
         // player = NetworkClient.connection.identity.GetComponent<RTSPlayer>();     
+    }
+
+    public Enumerators.DialogType GetOpenedPanel()
+    {
+        return openedPanel;
     }
 
     public void ClosePanels()
@@ -25,10 +30,11 @@ public class DialogDisplayHandler : MonoBehaviour
         roomSettingsPanel?.SetActive(false);
 
         OnDialogChange?.Invoke(false);
+        openedPanel = Enumerators.DialogType.None;
     }
 
 
-    public void OpenPanel(Constants.DialogType panelToOpen)
+    public void OpenPanel(Enumerators.DialogType panelToOpen)
     {
         ClosePanels();
 
@@ -36,14 +42,15 @@ public class DialogDisplayHandler : MonoBehaviour
 
         switch (panelToOpen)
         {
-            case Constants.DialogType.Settings: settingsPanel?.SetActive(true); break;
-            case Constants.DialogType.RoomSettings: roomSettingsPanel?.SetActive(true); break;
-            case Constants.DialogType.Customize: customizePanel?.SetActive(true); break;
+            case Enumerators.DialogType.Settings: settingsPanel?.SetActive(true); break;
+            case Enumerators.DialogType.RoomSettings: roomSettingsPanel?.SetActive(true); break;
+            case Enumerators.DialogType.Customize: customizePanel?.SetActive(true); break;
             default: open = false; break;
         }
 
         if (open)
         {
+            openedPanel = panelToOpen;
             OnDialogChange?.Invoke(true);
         }
     }

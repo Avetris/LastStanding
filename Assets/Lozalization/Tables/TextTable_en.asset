@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: TextTable_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: b8bed1627e3f6954083cf00135687235, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 82106605568
+    m_Localized: The room has reach the maximun number of player.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1689506504704
+    m_Localized: Color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1748398727168
+    m_Localized: Head
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1779478519808
+    m_Localized: Body
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1824827334656
+    m_Localized: Legs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1873384792064
+    m_Localized: Shoes
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 1

@@ -1,5 +1,6 @@
 using kcp2k;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerPreviewCameraController : MonoBehaviour
 {
@@ -7,7 +8,9 @@ public class PlayerPreviewCameraController : MonoBehaviour
     [SerializeField] private Transform characterTransform;
     [SerializeField] private float rotationSpeed = 70f;
 
-    private Constants.RotationType rotating;
+    private DialogDisplayHandler dialogDisplayHandler;
+
+    private Enumerators.RotationType rotating;
 
     public void ChangePreviewCameraStatus(bool enable)
     {
@@ -18,16 +21,16 @@ public class PlayerPreviewCameraController : MonoBehaviour
         }        
     }
 
-    public void ChangeRotation(Constants.RotationType newRotationType)
+    public void ChangeRotation(Enumerators.RotationType newRotationType)
     {
         rotating = newRotationType;
     }
 
     private void Update() {
-        if(rotating != Constants.RotationType.None)
+        if(rotating != Enumerators.RotationType.None)
         {
             float direction = rotationSpeed * Time.deltaTime;
-            if(rotating == Constants.RotationType.Left)
+            if(rotating == Enumerators.RotationType.Left)
             {
                 direction *= -1;
             }

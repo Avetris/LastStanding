@@ -55,6 +55,10 @@ public class PlayerCollisionHandler : NetworkBehaviour
             actionTarget = actionBtn;
         }
         actionTarget.GetComponent<ActionObject>().SetIsPlayerNear(status);
+        if(!status)
+        {
+            actionTarget = null;
+        }
     }
 
     #endregion
