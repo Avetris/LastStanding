@@ -64,20 +64,14 @@ public class ArrowMovement : NetworkBehaviour
             }
         }
     }
-
-    [ServerCallback]
-    public void OnTriggerEnter(Collider other)
-    {
-        ApplyCollision(other.tag, other.name, other.transform);
-    }
-
+    
     [ServerCallback]
     public void OnCollisionEnter(Collision other)
     {
-        ApplyCollision(other.gameObject.tag, other.gameObject.name, other.transform);
+        ApplyCollision(other.gameObject.tag, other.gameObject.name, other);
     }
 
-    private void ApplyCollision(string tag, string name, Transform parentTransform)
+    private void ApplyCollision(string tag, string name, Collision other)
     {
         if (tag == "Arrow") { return; }
         if (collisionOccurred) { return; }
@@ -89,9 +83,12 @@ public class ArrowMovement : NetworkBehaviour
         collisionOccurred = true;
 
         if (name == "Character")
-        {
-            transform.SetParent(parentTransform, true);
-            parentTransform.GetComponentInParent<PlayerInfo>().Kill();
+        {            
+            Transform hittedTransform = 
+                other.gameObject.GetComponentInParent<PlayerCollisionHandler>().GetHittedBone(
+                    other.GetContact(0).point);
+            transform.SetParent(hittedTransform, true);
+            other.gameObject.GetComponentInParent<PlayerInfo>().Kill();
         }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class PlayerCollisionHandler : NetworkBehaviour
 {
-    [SerializeField] private GameObject playerUI = null;
+    [SerializeField] private Transform m_RootBone = null;
 
     private GameObject actionTarget;
 
@@ -12,15 +12,6 @@ public class PlayerCollisionHandler : NetworkBehaviour
     {
         return actionTarget;
     }
-
-    private void Start()
-    {
-        if (hasAuthority)
-        {
-            playerUI.SetActive(true);
-        }
-    }
-
     #region Server
 
     [ServerCallback]
@@ -43,6 +34,20 @@ public class PlayerCollisionHandler : NetworkBehaviour
         }
     }
 
+    public Transform GetHittedBone(Vector3 hitPosition)
+    {
+        float closestPos = Mathf.Infinity;
+        Transform closestBone = null;
+        foreach (Transform child in m_RootBone) {
+            if(Vector3.Distance(child.position, hitPosition) < closestPos) {
+                closestPos = Vector3.Distance(child.position, hitPosition);
+                closestBone = child;
+            }
+        }
+
+        return closestBone;
+    }
+
     #endregion
 
     #region Client
@@ -63,6 +68,4 @@ public class PlayerCollisionHandler : NetworkBehaviour
     }
 
     #endregion
-
-
 }

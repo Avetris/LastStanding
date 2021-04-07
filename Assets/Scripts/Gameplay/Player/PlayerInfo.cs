@@ -10,7 +10,7 @@ public struct CharacterData
 
 public class PlayerInfo : NetworkBehaviour
 {
-    [SerializeField] private GameObject character;
+    [SerializeField] private Renderer character;
 
     [SyncVar]
     public int playerId = 0;
@@ -68,7 +68,7 @@ public class PlayerInfo : NetworkBehaviour
 
     public Vector3 GetPlayerPosition()
     {
-        return character.transform.position;
+        return character.bounds.center;
     }
 
     public void Kill()

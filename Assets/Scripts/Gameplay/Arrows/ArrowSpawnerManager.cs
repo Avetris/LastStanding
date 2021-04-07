@@ -23,7 +23,7 @@ public class ArrowSpawnerManager : NetworkBehaviour
     private void Update() {
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            ShootNextBallistic(player.GetPlayerPosition());
+            ShootNextBallistic(player.GetPlayerPosition(), Enumerators.ArrowType.Normal);
         }
     }
 
@@ -44,13 +44,13 @@ public class ArrowSpawnerManager : NetworkBehaviour
 
         foreach(Vector3 pos in GetCirclePositions(radius))
         {   
-            ShootNextBallistic(pos);
+            ShootNextBallistic(pos, Enumerators.ArrowType.Circle);
         }
     }
 
-    private void ShootNextBallistic(Vector3 pos)
+    private void ShootNextBallistic(Vector3 pos, Enumerators.ArrowType arrowType)
     {
-        ballistics[nextBallisticToShoot++].ShootArrow(pos);
+        ballistics[nextBallisticToShoot++].ShootArrow(pos, arrowType);
 
         if(nextBallisticToShoot >= ballistics.Length)
         {

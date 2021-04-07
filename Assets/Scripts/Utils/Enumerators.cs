@@ -12,4 +12,6 @@ public class Enumerators
 
     public enum Variable { FullBots, ArrowSpanwNumber, ArrowTimeSpawn, ArrowCircleTime, ArrowCircleRadius };
 
+    public enum ArrowType {Normal, Fire, Circle}
+
 }

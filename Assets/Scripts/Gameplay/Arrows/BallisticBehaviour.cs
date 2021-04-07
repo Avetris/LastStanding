@@ -10,12 +10,33 @@ public class BallisticBehaviour : NetworkBehaviour
 {
     [SerializeField] private GameObject arrowPrefab;
 
-    public void ShootArrow(Vector3 to)
+    public void ShootArrow(Vector3 to, Enumerators.ArrowType arrowType)
     {
         Vector3 from = transform.position;
         Quaternion rotation = Utils.GetRotationBetweenVectors(from, to);
-        GameObject arrowInstance = Instantiate(arrowPrefab, from, rotation);
+        GameObject arrowInstance = GetArrowType(from, rotation, arrowType);
         NetworkServer.Spawn(arrowInstance);
         arrowInstance.GetComponent<ArrowMovement>().Shoot(from, to, 5f);
+    }
+    
+    private GameObject GetArrowType(Vector3 from, Quaternion rotation, Enumerators.ArrowType arrowType)
+    {
+        GameObject arrow = null;
+        switch(arrowType)
+        {
+            case Enumerators.ArrowType.Circle:
+                arrow = arrowPrefab; 
+                arrow.transform.localScale = new Vector3(1f, 1f, 1f);
+                break;
+            case Enumerators.ArrowType.Normal: 
+                arrow = arrowPrefab; 
+                arrow.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                break;
+            case Enumerators.ArrowType.Fire: 
+                arrow = arrowPrefab; 
+                arrow.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                break;
+        }       
+        return  Instantiate(arrow, from, rotation);
     }
 }

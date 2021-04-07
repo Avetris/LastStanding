@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Player : NetworkBehaviour
 {
+    [SerializeField] private GameObject m_PlayerUI = null;
     [SerializeField] private GameObject playerCamera;
 
     [SyncVar(hook = nameof(AuthorityHandlePartyOwnerStateUpdated))]
@@ -13,22 +14,21 @@ public class Player : NetworkBehaviour
     public static event Action<bool> AuthorityOnPartyOwnerStateUpdated;
 
     private void Start()
-    {       
+    {
         SceneManager.activeSceneChanged += OnSceneChanged;
         Scene currentScene = SceneManager.GetActiveScene();
         OnSceneChanged(currentScene, currentScene);
     }
-    
+
     private void OnSceneChanged(Scene oldScene, Scene newScene)
-    {        
-        if(this == null || gameObject == null){ return; }
+    {
+        if (this == null || gameObject == null) { return; }
 
         GetComponentInChildren<FaceCamera>().ResetMainCamera();
         playerCamera.SetActive(false);
-        if(hasAuthority)
-        {
-            playerCamera.SetActive(true);
-        }
+        
+        playerCamera.SetActive(hasAuthority);
+        m_PlayerUI.SetActive(hasAuthority);
     }
 
     public void SetPartyOwner(bool partyOwner)
@@ -57,7 +57,7 @@ public class Player : NetworkBehaviour
     public override void OnStartClient()
     {
         if (NetworkServer.active) { return; }
-        
+
         DontDestroyOnLoad(gameObject);
 
         ((CustomNetworkManager)NetworkManager.singleton).ChangePlayerList(true, this);
