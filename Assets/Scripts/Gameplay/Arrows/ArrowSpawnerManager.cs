@@ -8,7 +8,7 @@ using System.Linq;
 
 public class ArrowSpawnerManager : NetworkBehaviour
 {
-    [SerializeField] private BallisticBehaviour[] ballistics;
+    private BallisticBehaviour[] ballistics;
 
     private float circlePonderation = 2f;
     private int nextBallisticToShoot = 0;

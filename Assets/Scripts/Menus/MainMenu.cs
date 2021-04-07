@@ -50,15 +50,15 @@ public class MainMenu : MonoBehaviour
         {
             if(customEvent.GetEventType() == EventType.Message)
             {
-                errorDialog.GetComponentInChildren<TMP_Text>().text = customEvent.GetValue<string>();
-                errorDialog.SetActive(true);
+               PrintErrorDialog(customEvent.GetValue<string>());
             }
         }
     }
 
     private void PrintErrorDialog(string text)
     {
-
+        errorDialog.GetComponentInChildren<TMP_Text>().text = text;
+        errorDialog.SetActive(true);
     }
 
 

@@ -20,8 +20,12 @@ public class PlayerInfo : NetworkBehaviour
     [SyncVar(hook = nameof(OnColorChangeHandler))]
     private Color displayColor = Color.clear;
 
+    [SyncVar(hook = nameof(OnIsAliveChange))]
+    private bool isAlive = true;
+
     public event Action<Color> ClientOnColorUpdated;
     public event Action<string> ClientOnNameUpdated;
+    public event Action<bool> ClientOnIsAliveUpdated;
 
     private SyncDictionary<Enumerators.CustomizeItem, CharacterData> characterData = new SyncDictionary<Enumerators.CustomizeItem, CharacterData>();
 
@@ -65,6 +69,21 @@ public class PlayerInfo : NetworkBehaviour
     public Vector3 GetPlayerPosition()
     {
         return character.transform.position;
+    }
+
+    public void Kill()
+    {
+        isAlive = false;
+    }
+
+    public void Resurrect()
+    {
+        isAlive = true;
+    }
+
+    public bool IsAlive()
+    {
+        return isAlive;
     }
     #endregion
 
@@ -110,6 +129,11 @@ public class PlayerInfo : NetworkBehaviour
             LobbyRoomManager.singleton.CanSetColor(playerId, displayColor, Color.clear);
         }
         base.OnStopServer();
+    }
+
+    public void OnIsAliveChange(bool oldIsAlive, bool newIsAlive)
+    {
+        ClientOnIsAliveUpdated?.Invoke(newIsAlive);
     }
 
     #endregion

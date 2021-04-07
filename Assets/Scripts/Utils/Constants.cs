@@ -9,6 +9,6 @@ public class Constants{
 
     public static Enumerators.Languages DefaultLanguage = Enumerators.Languages.en;
     public static int MaxPlayers = 10;
-    public static int MinPlayers = 10;
+    public static int MinPlayers = 1;
 
 }

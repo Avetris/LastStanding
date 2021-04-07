@@ -5,16 +5,19 @@ using UnityEngine.InputSystem;
 
 public class PlayerControlller : NetworkBehaviour
 {
-    [SerializeField] private float speed = 200f;
-    [SerializeField] private float runSpeed = 500f;    
-    [SerializeField] private float rotationSpeed = 5f;
-    [SerializeField] private float rotationRunSpeed = 10f;
-    [SerializeField] private CharacterController controller = null;
-    [SerializeField] private PlayerPreviewCameraController playerPreviewCameraController = null;
-
+    [SerializeField] private float m_Speed = 200f;
+    [SerializeField] private float m_RunSpeed = 500f;
+    [SerializeField] private float m_RotationSpeed = 5f;
+    [SerializeField] private float m_RotationRunSpeed = 10f;
+    [SerializeField] float m_MovingTurnSpeed = 360;
+    [SerializeField] float m_StationaryTurnSpeed = 180;
+    [SerializeField] float m_RunCycleLegOffset = 0.2f;
+    [SerializeField] private CharacterController m_Controller = null;
+    
+    PlayerPreviewCameraController m_PlayerPreviewCameraController = null;
+    PlayerAnimationController m_PlayerAnimationController;
     Controls controls;
 
-    Vector3 point;
     Vector2 currentMoveDirection = Vector2.zero;
     private bool isRunning = false;
 
@@ -27,6 +30,26 @@ public class PlayerControlller : NetworkBehaviour
     private void Start()
     {
         InitInput();
+        m_PlayerPreviewCameraController = GetComponent<PlayerPreviewCameraController>();
+        m_PlayerAnimationController = GetComponent<PlayerAnimationController>();
+        GetComponent<PlayerInfo>().ClientOnIsAliveUpdated += HandleIsAliveUpdate;
+    }
+
+    private void OnDestroy()
+    {
+        GetComponent<PlayerInfo>().ClientOnIsAliveUpdated -= HandleIsAliveUpdate;
+    }
+
+    private void HandleIsAliveUpdate(bool isAlive)
+    {
+        if (isAlive && hasAuthority)
+        {
+            controls.Enable();
+        }
+        else
+        {
+            controls.Disable();
+        }
     }
 
     [Client]
@@ -57,12 +80,12 @@ public class PlayerControlller : NetworkBehaviour
             float previewRotation = ctx.ReadValue<Vector2>().x;
             if (previewRotation != 0)
             {
-                playerPreviewCameraController.ChangeRotation(
+                m_PlayerPreviewCameraController.ChangeRotation(
                     previewRotation > 0 ? Enumerators.RotationType.Right : Enumerators.RotationType.Left);
             }
             else
-            {                
-                playerPreviewCameraController.ChangeRotation(Enumerators.RotationType.None);
+            {
+                m_PlayerPreviewCameraController.ChangeRotation(Enumerators.RotationType.None);
             }
             currentMoveDirection = Vector2.zero;
         }
@@ -78,7 +101,7 @@ public class PlayerControlller : NetworkBehaviour
     }
 
     private void SetDoActionInput(InputAction.CallbackContext ctx)
-    {        
+    {
         if (ctx.ReadValue<float>() > 0)
         {
             DialogDisplayHandler dialogHandler = FindObjectOfType<DialogDisplayHandler>();
@@ -91,17 +114,36 @@ public class PlayerControlller : NetworkBehaviour
 
     #region Server
     [Command]
-    public void CmdMove(Vector2 direction, float currentRotationSpeed, float currentSpeed)
+    public void CmdMove(Vector2 direction, float currentSpeed)
     {
-        Vector3 rotation = new Vector3(0, direction.x * currentRotationSpeed, 0);
+        Vector3 moveVector = direction[1]*Vector3.forward + direction[0]*Vector3.right;
 
-        Vector3 move = new Vector3(0, 0, direction.y * Time.deltaTime);
-        move = controller.transform.TransformDirection(move);
-        controller.SimpleMove(move * currentSpeed);
-
-        controller.transform.Rotate(rotation);
+        // pass all parameters to the character control script
+        Move(moveVector);
+        
+        m_Controller.SimpleMove(moveVector * currentSpeed * Time.deltaTime);
     }
 
+    [ServerCallback]
+    public void Move(Vector3 move)
+    {
+        // convert the world relative moveInput vector into a local-relative
+        // turn amount and forward amount required to head in the desired
+        // direction.
+        if (move.magnitude > 1f) move.Normalize();
+        move = m_Controller.transform.transform.InverseTransformDirection(move);
+
+        move = Vector3.ProjectOnPlane(move, Vector3.up);
+        float turnAmount = Mathf.Atan2(move.x, move.z);
+        float forwardAmount = move.z;
+
+        // help the character turn faster (this is in addition to root rotation in the animation)
+        float turnSpeed = Mathf.Lerp(m_StationaryTurnSpeed, m_MovingTurnSpeed, forwardAmount);
+        m_Controller.transform.Rotate(0, turnAmount * turnSpeed * Time.deltaTime, 0);
+
+        // send input and other state parameters to the animator
+        m_PlayerAnimationController.UpdateMoveAnimator(move, turnAmount, forwardAmount);
+    }
     #endregion
 
     #region Client
@@ -110,15 +152,7 @@ public class PlayerControlller : NetworkBehaviour
     private void Update()
     {
         if (!hasAuthority) { return; }
-        if (currentMoveDirection.x != 0 || currentMoveDirection.y != 0)
-        {
-            CmdMove(currentMoveDirection, isRunning ?  rotationRunSpeed : rotationSpeed , isRunning ? runSpeed : speed );
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        // rigidbody.velocity = new Vector3(currentMoveDirection.x, 0, currentMoveDirection.y).normalized * speed;
+        CmdMove(currentMoveDirection, isRunning ? m_RunSpeed : m_Speed);
     }
 
     public override void OnStartClient()

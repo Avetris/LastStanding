@@ -994,12 +994,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4704607313234896470}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c4d3e10fec8aa24d91231fcda888ed9, type: 3}
+  m_Script: {fileID: 11500000, guid: 03931f047b347a94f980ad25c55efbdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  speed: 10
   targetHit: {fileID: 0}
 --- !u!114 &7227804262231158739
 MonoBehaviour:

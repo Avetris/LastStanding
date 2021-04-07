@@ -91,6 +91,7 @@ public class ArrowMovement : NetworkBehaviour
         if (name == "Character")
         {
             transform.SetParent(parentTransform, true);
+            parentTransform.GetComponentInParent<PlayerInfo>().Kill();
         }
     }
 }

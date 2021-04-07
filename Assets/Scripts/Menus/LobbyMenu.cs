@@ -37,6 +37,7 @@ public class LobbyMenu : MonoBehaviour
 
     public void StartGame()
     {
+        Debug.Log("EWNTRA");
         NetworkClient.connection.identity.GetComponent<Player>().CmdStartGame();
     }
 

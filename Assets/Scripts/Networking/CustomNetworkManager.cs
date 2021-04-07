@@ -16,7 +16,7 @@ public class CustomNetworkManager : NetworkManager
 
     private bool isGameInProgress = false;
 
-    private List<Player> Players { get; } = new List<Player>();
+    public List<Player> Players { get; } = new List<Player>();
 
     public static event Action ClientOnConnected;
     public static event Action ClientOnDisconnected;

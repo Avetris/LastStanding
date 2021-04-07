@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class PlayerCollisionHandler : NetworkBehaviour
 {
     [SerializeField] private GameObject playerUI = null;
-    
+
     private GameObject actionTarget;
 
     public GameObject GeActionTarget()
@@ -13,13 +13,14 @@ public class PlayerCollisionHandler : NetworkBehaviour
         return actionTarget;
     }
 
-    private void Start() {
-        if(hasAuthority)
+    private void Start()
+    {
+        if (hasAuthority)
         {
             playerUI.SetActive(true);
         }
     }
-    
+
     #region Server
 
     [ServerCallback]
@@ -48,14 +49,14 @@ public class PlayerCollisionHandler : NetworkBehaviour
     [ClientRpc]
     private void RpcUpdateActionButtonStatus(GameObject actionBtn, bool status)
     {
-        if(!hasAuthority) { return; }
-        
-        if(actionTarget == null)
+        if (!hasAuthority) { return; }
+
+        if (actionTarget == null)
         {
             actionTarget = actionBtn;
         }
         actionTarget.GetComponent<ActionObject>().SetIsPlayerNear(status);
-        if(!status)
+        if (!status)
         {
             actionTarget = null;
         }

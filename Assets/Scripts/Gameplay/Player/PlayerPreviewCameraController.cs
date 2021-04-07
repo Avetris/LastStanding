@@ -15,10 +15,6 @@ public class PlayerPreviewCameraController : MonoBehaviour
     public void ChangePreviewCameraStatus(bool enable)
     {
         playerPreviewCamera.gameObject.SetActive(enable);
-        if (enable)
-        {
-            playerPreviewCamera.rotation = Utils.GetRotationBetweenVectors(playerPreviewCamera.transform.position, characterTransform.position);
-        }        
     }
 
     public void ChangeRotation(Enumerators.RotationType newRotationType)
