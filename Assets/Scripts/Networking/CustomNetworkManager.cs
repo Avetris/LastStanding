@@ -12,7 +12,7 @@ public class CustomNetworkManager : NetworkManager
 
     private int nextPlayerId = 0;
 
-    public Dictionary<Enumerators.Variable, string> gameSetting = new Dictionary<Enumerators.Variable, string>();
+    public Dictionary<Enumerators.GameSetting, string> gameSetting = new Dictionary<Enumerators.GameSetting, string>();
 
     private bool isGameInProgress = false;
 
@@ -21,7 +21,7 @@ public class CustomNetworkManager : NetworkManager
     public static event Action ClientOnConnected;
     public static event Action ClientOnDisconnected;
     public static event Action<int> PlayerNumberUpdated;
-    public static event Action<Enumerators.Variable> GameSettingsUpdated;
+    public static event Action<Enumerators.GameSetting> GameSettingsUpdated;
 
     public override void Start()
     {
@@ -112,13 +112,13 @@ public class CustomNetworkManager : NetworkManager
         }
     }
 
-    public void ChangeSetting<T>(Enumerators.Variable variable, T newValue)
+    public void ChangeSetting<T>(Enumerators.GameSetting variable, T newValue)
     {
         gameSetting[variable] = newValue.ToString();
         GameSettingsUpdated?.Invoke(variable);
     }
 
-    public T GetSetting<T>(Enumerators.Variable variable, T defaultValue)
+    public T GetSetting<T>(Enumerators.GameSetting variable, T defaultValue)
     {
         if (gameSetting.ContainsKey(variable))
         {

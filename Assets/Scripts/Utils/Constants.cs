@@ -7,7 +7,6 @@ public class Constants{
     public static string GameScene = "GameScene";
     #endregion
 
-    public static Enumerators.Languages DefaultLanguage = Enumerators.Languages.en;
     public static int MaxPlayers = 10;
     public static int MinPlayers = 1;
 

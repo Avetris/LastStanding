@@ -13,7 +13,7 @@ public class PlayerControlller : NetworkBehaviour
     [SerializeField] float m_StationaryTurnSpeed = 180;
     [SerializeField] float m_RunCycleLegOffset = 0.2f;
     [SerializeField] private CharacterController m_Controller = null;
-    
+
     PlayerPreviewCameraController m_PlayerPreviewCameraController = null;
     PlayerAnimationController m_PlayerAnimationController;
     Controls controls;
@@ -114,13 +114,14 @@ public class PlayerControlller : NetworkBehaviour
 
     #region Server
     [Command]
-    public void CmdMove(Vector2 direction, float currentSpeed)
+    public void CmdMove(Vector2 direction, bool isRunning)
     {
-        Vector3 moveVector = direction[1]*Vector3.forward + direction[0]*Vector3.right;
-
+        Vector3 moveVector = direction[1] * Vector3.forward + direction[0] * Vector3.right;
         // pass all parameters to the character control script
-        Move(moveVector);
-        
+        Move(moveVector * (isRunning ? 1f : 0.5f));
+
+        float currentSpeed = isRunning ? m_RunSpeed : m_Speed;
+
         m_Controller.SimpleMove(moveVector * currentSpeed * Time.deltaTime);
     }
 
@@ -142,7 +143,7 @@ public class PlayerControlller : NetworkBehaviour
         m_Controller.transform.Rotate(0, turnAmount * turnSpeed * Time.deltaTime, 0);
 
         // send input and other state parameters to the animator
-        m_PlayerAnimationController.UpdateMoveAnimator(move, turnAmount, forwardAmount);
+        m_PlayerAnimationController.RpcUpdateMoveAnimator(move, turnAmount, forwardAmount);
     }
     #endregion
 
@@ -152,7 +153,7 @@ public class PlayerControlller : NetworkBehaviour
     private void Update()
     {
         if (!hasAuthority) { return; }
-        CmdMove(currentMoveDirection, isRunning ? m_RunSpeed : m_Speed);
+        CmdMove(currentMoveDirection, isRunning);
     }
 
     public override void OnStartClient()

@@ -554,7 +554,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   animator: {fileID: 7687234735408894634}
 --- !u!54 &3816674156624266443
 Rigidbody:
@@ -685,6 +685,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  m_Animator: {fileID: 7687234735408894634}
 --- !u!1 &914711182974014542
 GameObject:
   m_ObjectHideFlags: 0
@@ -2606,7 +2607,7 @@ GameObject:
   - component: {fileID: 2392362458191580555}
   - component: {fileID: 1559342158}
   - component: {fileID: 1830300855466646961}
-  - component: {fileID: 7723730402839188332}
+  - component: {fileID: 376411809310026282}
   m_Layer: 7
   m_Name: Character
   m_TagString: Player
@@ -2643,12 +2644,12 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 2
   m_Height: 2
-  m_Radius: 0.5
+  m_Radius: 0.35
   m_SlopeLimit: 45
   m_StepOffset: 0
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 1.1, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!137 &1830300855466646961
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -2750,8 +2751,8 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.00000011920929, y: 0.8587489, z: -0.027915299}
     m_Extent: {x: 1.0258236, y: 0.9798567, z: 0.30891627}
   m_DirtyAABB: 0
---- !u!64 &7723730402839188332
-MeshCollider:
+--- !u!136 &376411809310026282
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2760,10 +2761,10 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 0
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300008, guid: 4837235d67e136e4b883adb2bafc73e8, type: 3}
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 0
+  m_Center: {x: -0.5, y: 0.4, z: -0.45}
 --- !u!1 &8463962948560831031
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,9 +6,10 @@ using UnityEditor;
 
 public class ArrowMovement : NetworkBehaviour
 {
-    private Rigidbody arrowRigidbody = null;
+    [SerializeField] private Rigidbody arrowRigidbody = null;
 
     // register collision
+    [SyncVar(hook=nameof(OnCollisionChanged))]
     bool collisionOccurred;
 
     // Reference to audioclip when target is hit
@@ -16,10 +17,13 @@ public class ArrowMovement : NetworkBehaviour
 
     // Use this for initialization
 
+    private void OnCollisionChanged(bool lastState, bool newState)
+    {
+        AvoidMoving();
+    }
+
     public void Shoot(Vector3 origin, Vector3 target, float time)
     {
-        arrowRigidbody = GetComponent<Rigidbody>();
-
         Vector3 initialVelocity = CalculateInitialVelocity(target, origin, time);
 
         arrowRigidbody.AddForce(initialVelocity, ForceMode.VelocityChange);
@@ -75,20 +79,31 @@ public class ArrowMovement : NetworkBehaviour
     {
         if (tag == "Arrow") { return; }
         if (collisionOccurred) { return; }
-        arrowRigidbody.velocity = Vector3.zero;
-        // disable the rigidbody
-        // rigidbody.isKinematic = true;
-        arrowRigidbody.constraints = RigidbodyConstraints.FreezeAll;
+        AvoidMoving();
         // and a collision occurred
         collisionOccurred = true;
 
         if (name == "Character")
-        {            
-            Transform hittedTransform = 
-                other.gameObject.GetComponentInParent<PlayerCollisionHandler>().GetHittedBone(
-                    other.GetContact(0).point);
-            transform.SetParent(hittedTransform, true);
+        {           
+            HittedPlayer(other.gameObject.GetComponentInParent<PlayerCollisionHandler>(), 
+                         other.GetContact(0).point);
             other.gameObject.GetComponentInParent<PlayerInfo>().Kill();
         }
+    }
+
+    [ClientRpc]
+    private void HittedPlayer(PlayerCollisionHandler playerCollisionHandler, Vector3 collisionPoint)
+    {
+        Transform hittedTransform = playerCollisionHandler.GetHittedBone(collisionPoint);
+        transform.SetParent(hittedTransform, true);
+    }
+
+    private void AvoidMoving()
+    {
+        arrowRigidbody.useGravity = false;
+        arrowRigidbody.velocity = Vector3.zero;
+        // disable the rigidbody
+        // rigidbody.isKinematic = true;
+        arrowRigidbody.constraints = RigidbodyConstraints.FreezeAll;
     }
 }
