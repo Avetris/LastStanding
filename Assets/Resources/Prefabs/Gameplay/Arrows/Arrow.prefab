@@ -1000,7 +1000,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  arrowRigidbody: {fileID: 4883283184832888602}
+  m_ArrowRigidbody: {fileID: 4883283184832888602}
   targetHit: {fileID: 0}
 --- !u!114 &7227804262231158739
 MonoBehaviour:

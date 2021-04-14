@@ -5,11 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class Player : NetworkBehaviour
 {
-    [SerializeField] private GameObject m_PlayerUI = null;
-    [SerializeField] private GameObject playerCamera;
+    [SerializeField] private GameObject m_PlayerCamera;
 
-    [SyncVar(hook = nameof(AuthorityHandlePartyOwnerStateUpdated))]
-    private bool isPartyOwner = false;
+    [SyncVar(hook = nameof(OnAuthorityPartyOwnerStateUpdated))]
+    private bool m_IsPartyOwner = false;
 
     public static event Action<bool> AuthorityOnPartyOwnerStateUpdated;
 
@@ -30,20 +29,19 @@ public class Player : NetworkBehaviour
         if (this == null || gameObject == null) { return; }
 
         GetComponentInChildren<FaceCamera>().ResetMainCamera();
-        playerCamera.SetActive(false);
+        m_PlayerCamera.SetActive(false);
         
-        playerCamera.SetActive(hasAuthority);
-        m_PlayerUI.SetActive(hasAuthority);      
+        m_PlayerCamera.SetActive(hasAuthority);
 
         if(Constants.LobbyScene.Equals(newScene.name))
         {   
-            this.Invoke(() => AuthorityOnPartyOwnerStateUpdated?.Invoke(isPartyOwner), .1f);
+            this.Invoke(() => AuthorityOnPartyOwnerStateUpdated?.Invoke(m_IsPartyOwner), .1f);
         }
     }
 
     public void SetPartyOwner(bool partyOwner)
     {
-        isPartyOwner = partyOwner;
+        m_IsPartyOwner = partyOwner;
     }
 
     #region Server
@@ -51,7 +49,7 @@ public class Player : NetworkBehaviour
     [Command]
     public void CmdStartGame()
     {
-        if (!isPartyOwner || !hasAuthority) { return; }
+        if (!m_IsPartyOwner || !hasAuthority) { return; }
 
         ((CustomNetworkManager)NetworkManager.singleton).StartGame();
     }
@@ -82,7 +80,7 @@ public class Player : NetworkBehaviour
         if (!hasAuthority) { return; }
     }
 
-    private void AuthorityHandlePartyOwnerStateUpdated(bool oldState, bool newState)
+    private void OnAuthorityPartyOwnerStateUpdated(bool oldState, bool newState)
     {
         if (!hasAuthority) { return; }
 

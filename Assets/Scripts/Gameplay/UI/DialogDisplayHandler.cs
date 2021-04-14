@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DialogDisplayHandler : MonoBehaviour
 {
+    private const string TAG = "DialogDisplayHandler";
 
     [SerializeField] private GameObject settingsPanel = null;
     [SerializeField] private GameObject customizePanel = null;
@@ -52,6 +53,19 @@ public class DialogDisplayHandler : MonoBehaviour
         {
             openedPanel = panelToOpen;
             OnDialogChange?.Invoke(true);
+        }
+    }
+
+    public void OpenPanelFromUI(string panelName)
+    {
+        Enumerators.DialogType dialogType = Enumerators.DialogType.None;
+        if (Enum.TryParse<Enumerators.DialogType>(panelName, true, out dialogType))
+        {
+
+        }
+        else
+        { 
+            LogManager.Error(TAG, $"OpenPanelFromUI::Panel name not found. Panel name provided: {panelName}");  
         }
     }
 }

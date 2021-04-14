@@ -8,7 +8,7 @@ using System.Linq;
 
 public class BallisticBehaviour : NetworkBehaviour
 {
-    [SerializeField] private GameObject arrowPrefab;
+    [SerializeField] private GameObject m_ArrowPrefab;
 
     public void ShootArrow(Vector3 to, Enumerators.ArrowType arrowType)
     {
@@ -25,15 +25,15 @@ public class BallisticBehaviour : NetworkBehaviour
         switch(arrowType)
         {
             case Enumerators.ArrowType.Circle:
-                arrow = arrowPrefab; 
+                arrow = m_ArrowPrefab; 
                 arrow.transform.localScale = new Vector3(1f, 1f, 1f);
                 break;
             case Enumerators.ArrowType.Normal: 
-                arrow = arrowPrefab; 
+                arrow = m_ArrowPrefab; 
                 arrow.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
                 break;
             case Enumerators.ArrowType.Fire: 
-                arrow = arrowPrefab; 
+                arrow = m_ArrowPrefab; 
                 arrow.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
                 break;
         }       

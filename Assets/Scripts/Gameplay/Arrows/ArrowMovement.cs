@@ -6,7 +6,7 @@ using UnityEditor;
 
 public class ArrowMovement : NetworkBehaviour
 {
-    [SerializeField] private Rigidbody arrowRigidbody = null;
+    [SerializeField] private Rigidbody m_ArrowRigidbody = null;
 
     // register collision
     [SyncVar(hook=nameof(OnCollisionChanged))]
@@ -26,7 +26,7 @@ public class ArrowMovement : NetworkBehaviour
     {
         Vector3 initialVelocity = CalculateInitialVelocity(target, origin, time);
 
-        arrowRigidbody.AddForce(initialVelocity, ForceMode.VelocityChange);
+        m_ArrowRigidbody.AddForce(initialVelocity, ForceMode.VelocityChange);
     }
 
     private Vector3 CalculateInitialVelocity(Vector3 target, Vector3 origin, float time)
@@ -53,13 +53,13 @@ public class ArrowMovement : NetworkBehaviour
     {
         //this part of update is only executed, if a rigidbody is present
         // the rigidbody is added when the arrow is shot (released from the bowstring)
-        if (arrowRigidbody != null && !collisionOccurred)
+        if (m_ArrowRigidbody != null && !collisionOccurred)
         {
             // do we fly actually?
-            if (arrowRigidbody.velocity != Vector3.zero)
+            if (m_ArrowRigidbody.velocity != Vector3.zero)
             {
                 // get the actual velocity
-                Vector3 vel = arrowRigidbody.velocity;
+                Vector3 vel = m_ArrowRigidbody.velocity;
                 // calc the rotation from x and y velocity via a simple atan2
                 float angleZ = Mathf.Atan2(vel.y, vel.x) * Mathf.Rad2Deg;
                 float angleY = Mathf.Atan2(vel.z, vel.x) * Mathf.Rad2Deg;
@@ -79,12 +79,15 @@ public class ArrowMovement : NetworkBehaviour
     {
         if ("Arrow".Equals(tag)) { return; }
         if (collisionOccurred) { return; }
+        
+        if(LobbyRoomManager.singleton.IsPaused() && "Player".Equals(tag)) { return; }
+        
         AvoidMoving();
         // and a collision occurred
         collisionOccurred = true;
 
         if ("Player".Equals(tag))
-        {        
+        {
             HittedPlayer(other.gameObject.GetComponentInParent<PlayerCollisionHandler>(), 
                          other.GetContact(0).point);
             other.gameObject.GetComponentInParent<PlayerInfo>().Kill();
@@ -100,10 +103,10 @@ public class ArrowMovement : NetworkBehaviour
 
     private void AvoidMoving()
     {
-        arrowRigidbody.useGravity = false;
-        arrowRigidbody.velocity = Vector3.zero;
+        m_ArrowRigidbody.useGravity = false;
+        m_ArrowRigidbody.velocity = Vector3.zero;
         // disable the rigidbody
         // rigidbody.isKinematic = true;
-        arrowRigidbody.constraints = RigidbodyConstraints.FreezeAll;
+        m_ArrowRigidbody.constraints = RigidbodyConstraints.FreezeAll;
     }
 }

@@ -6,11 +6,11 @@ public class PlayerCollisionHandler : NetworkBehaviour
 {
     [SerializeField] private Transform m_RootBone = null;
 
-    private GameObject actionTarget;
+    private GameObject m_ActionTarget;
 
     public GameObject GeActionTarget()
     {
-        return actionTarget;
+        return m_ActionTarget;
     }
     #region Server
 
@@ -19,18 +19,18 @@ public class PlayerCollisionHandler : NetworkBehaviour
     {
         if ("Usable".Equals(other.gameObject.tag))
         {
-            actionTarget = other.gameObject;
-            RpcUpdateActionButtonStatus(actionTarget, true);
+            m_ActionTarget = other.gameObject;
+            RpcUpdateActionButtonStatus(m_ActionTarget, true);
         }
     }
 
     [ServerCallback]
     private void OnTriggerExit(Collider other)
     {
-        if ("Usable".Equals(other.gameObject.tag) && actionTarget == other.gameObject)
+        if ("Usable".Equals(other.gameObject.tag) && m_ActionTarget == other.gameObject)
         {
-            RpcUpdateActionButtonStatus(actionTarget, false);
-            actionTarget = null;
+            RpcUpdateActionButtonStatus(m_ActionTarget, false);
+            m_ActionTarget = null;
         }
     }
 
@@ -56,14 +56,14 @@ public class PlayerCollisionHandler : NetworkBehaviour
     {
         if (!hasAuthority) { return; }
 
-        if (actionTarget == null)
+        if (m_ActionTarget == null)
         {
-            actionTarget = actionBtn;
+            m_ActionTarget = actionBtn;
         }
-        actionTarget.GetComponent<ActionObject>().SetIsPlayerNear(status);
+        m_ActionTarget.GetComponent<ActionObject>().SetIsPlayerNear(status);
         if (!status)
         {
-            actionTarget = null;
+            m_ActionTarget = null;
         }
     }
 

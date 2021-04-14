@@ -10,80 +10,80 @@ public struct CharacterData
 
 public class PlayerInfo : NetworkBehaviour
 {
-    [SerializeField] private Renderer character;
+    [SerializeField] private Renderer m_Character;
 
     [SyncVar]
-    public int playerId = 0;
+    private int m_PlayerId = 0;
 
     [SyncVar(hook = nameof(OnNameChangeHandler))]
-    private string displayName = "";
+    private string m_DisplayName = "";
     [SyncVar(hook = nameof(OnColorChangeHandler))]
-    private Color displayColor = Color.clear;
+    private Color m_DisplayColor = Color.clear;
 
     [SyncVar(hook = nameof(OnIsAliveChange))]
-    private bool isAlive = true;
+    private bool m_IsAlive = true;
+
+    private SyncDictionary<Enumerators.CustomizeItem, CharacterData> m_CharacterData = new SyncDictionary<Enumerators.CustomizeItem, CharacterData>();
 
     public event Action<Color> ClientOnColorUpdated;
     public event Action<string> ClientOnNameUpdated;
     public event Action<bool> ClientOnIsAliveUpdated;
 
-    private SyncDictionary<Enumerators.CustomizeItem, CharacterData> characterData = new SyncDictionary<Enumerators.CustomizeItem, CharacterData>();
-
     #region Getters / Setters
 
     public SyncDictionary<Enumerators.CustomizeItem, CharacterData> GetCharacterData()
     {
-        return characterData;
+        return m_CharacterData;
     }
 
     public string GetDisplayName()
     {
-        return displayName;
+        return m_DisplayName;
     }
 
     public void SetDisplayName(string name)
     {
-        displayName = name;
+        m_DisplayName = name;
     }
 
     public Color GetDisplayColor()
     {
-        return displayColor;
+        return m_DisplayColor;
     }
 
     public void SetDisplayColor(Color color)
     {
-        displayColor = color;
+        m_DisplayColor = color;
     }
 
     public void SetPlayerId(int id)
     {
-        playerId = id;
+        m_PlayerId = id;
     }
 
     public int GetPlayerId()
     {
-        return playerId;
+        return m_PlayerId;
     }    
 
     public Vector3 GetPlayerPosition()
     {
-        return character.bounds.center;
+        return m_Character.bounds.center;
     }
 
     public void Kill()
     {
-        isAlive = false;
+        m_IsAlive = false;
     }
 
     public void Resurrect()
     {
-        isAlive = true;
+        m_IsAlive = true;
     }
 
     public bool IsAlive()
     {
-        return isAlive;
+        return m_IsAlive;
     }
     #endregion
 
@@ -101,7 +101,7 @@ public class PlayerInfo : NetworkBehaviour
     {
         if (!hasAuthority && !isServer) { return; }
 
-        bool canChange = LobbyRoomManager.singleton.CanSetColor(playerId, displayColor, newColor);
+        bool canChange = LobbyRoomManager.singleton.CanSetColor(m_PlayerId, m_DisplayColor, newColor);
 
         if (canChange)
         {
@@ -126,7 +126,7 @@ public class PlayerInfo : NetworkBehaviour
     {
         if(LobbyRoomManager.singleton != null)
         {
-            LobbyRoomManager.singleton.CanSetColor(playerId, displayColor, Color.clear);
+            LobbyRoomManager.singleton.CanSetColor(m_PlayerId, m_DisplayColor, Color.clear);
         }
         base.OnStopServer();
     }

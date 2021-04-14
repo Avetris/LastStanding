@@ -5,28 +5,37 @@ using UnityEngine.Localization.Tables;
 
 public class LocalizeManager : MonoBehaviour
 {
-    [SerializeField] private LocalizedStringTable _localizedStringTable;
-    
+    [SerializeField] private LocalizedStringTable m_LocalizedStringTable;
+
     #region SINGLETON
-    private static LocalizeManager _instance;
+    private static LocalizeManager m_Instance;
     public static LocalizeManager singleton
     {
         get
         {
-            if (_instance == null)
+            if (m_Instance == null)
             {
-                _instance = FindObjectOfType<LocalizeManager>();
+                m_Instance = FindObjectOfType<LocalizeManager>();
+                if (m_Instance == null)
+                {
+                    GameObject prefab = Resources.Load<GameObject>("Prefabs/LocalizeManager");
+                    GameObject instance = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+
+                    DontDestroyOnLoad(instance);
+
+                    m_Instance = instance.GetComponent<LocalizeManager>();
+                }
             }
-            return _instance;
+            return m_Instance;
         }
     }
     #endregion
 
     private StringTable _currentStringTable;
-    
+
     private IEnumerator Start()
     {
-        var tableLoading = _localizedStringTable.GetTable();
+        var tableLoading = m_LocalizedStringTable.GetTable();
         yield return tableLoading;
         _currentStringTable = tableLoading.Result;
     }

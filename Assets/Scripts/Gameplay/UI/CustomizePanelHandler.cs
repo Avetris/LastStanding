@@ -8,28 +8,26 @@ using System.Collections;
 
 public class CustomizePanelHandler : MonoBehaviour
 {
-    [SerializeField] private RectTransform scrollPanelRect = null;
-    [SerializeField] private GameObject customizePanel = null;
-    [SerializeField] private GameObject buttonPrefab = null;
-    [SerializeField] private GameObject horizontalPanelPrefab = null;
-    [SerializeField] private Camera playerPreviewCamera;
+    [SerializeField] private RectTransform m_ScrollPanelRect = null;
+    [SerializeField] private GameObject m_CustomizePanel = null;
+    [SerializeField] private GameObject m_ButtonPrefab = null;
+    [SerializeField] private GameObject m_HorizontalPanelPrefab = null;
 
-    [SerializeField] private Button selectedTabOnEnable = null;
+    [SerializeField] private Button m_SelectedTabOnEnable = null;
 
-    PlayerInfo playerInfo = null;
-    PlayerPreviewCameraController playerPreviewCameraController = null;
-    PlayerInfoDisplayer playerInfoDisplayer = null;
+    PlayerInfo m_PlayerInfo = null;
+    PlayerPreviewCameraController m_PlayerPreviewCameraController = null;
 
-    Enumerators.CustomizeItem currentTab = Enumerators.CustomizeItem.None;
+    Enumerators.CustomizeItem m_CurrentTab = Enumerators.CustomizeItem.None;
 
     private void OnEnable()
     {
-        if (playerInfo == null)
+        if (m_PlayerInfo == null)
         {
-            playerInfo = NetworkClient.connection.identity.GetComponent<PlayerInfo>();         
-            playerPreviewCameraController = NetworkClient.connection.identity.GetComponent<PlayerPreviewCameraController>();
+            m_PlayerInfo = NetworkClient.connection.identity.GetComponent<PlayerInfo>();         
+            m_PlayerPreviewCameraController = NetworkClient.connection.identity.GetComponent<PlayerPreviewCameraController>();
         }
-        playerPreviewCameraController.ChangePreviewCameraStatus(true);
+        m_PlayerPreviewCameraController.ChangePreviewCameraStatus(true);
 
         StartCoroutine(PressButton());
     }
@@ -38,14 +36,14 @@ public class CustomizePanelHandler : MonoBehaviour
     {
         yield return new WaitForSeconds(0.001f);
 
-        selectedTabOnEnable.onClick.Invoke();
-        selectedTabOnEnable.Select();
+        m_SelectedTabOnEnable.onClick.Invoke();
+        m_SelectedTabOnEnable.Select();
     }
 
     private void OnDisable()
     {
         OnTabChange(Enumerators.CustomizeItem.None);
-        playerPreviewCameraController.ChangePreviewCameraStatus(false);
+        m_PlayerPreviewCameraController.ChangePreviewCameraStatus(false);
     }
 
     public void ChangeTab(int tab)
@@ -55,11 +53,11 @@ public class CustomizePanelHandler : MonoBehaviour
 
     public void OnTabChange(Enumerators.CustomizeItem tab)
     {
-        if (tab == currentTab) { return; }
+        if (tab == m_CurrentTab) { return; }
         
         ClearTab();
 
-        if (currentTab == Enumerators.CustomizeItem.Color)
+        if (m_CurrentTab == Enumerators.CustomizeItem.Color)
         {
             LobbyRoomManager.singleton.UpdateColorChangeListeners(false, OnColorAvailabilityChanges);
         }
@@ -68,7 +66,7 @@ public class CustomizePanelHandler : MonoBehaviour
             LobbyRoomManager.singleton.UpdateColorChangeListeners(true, OnColorAvailabilityChanges);
         }
 
-        currentTab = tab;
+        m_CurrentTab = tab;
 
         List<GameObject> buttons = new List<GameObject>();
         switch (tab)
@@ -76,7 +74,7 @@ public class CustomizePanelHandler : MonoBehaviour
             case Enumerators.CustomizeItem.Color:
                 foreach ((Color color, int playerId) tuple in LobbyRoomManager.singleton.GetColors())
                 {
-                    bool selected = tuple.playerId == playerInfo.GetPlayerId();
+                    bool selected = tuple.playerId == m_PlayerInfo.GetPlayerId();
                     buttons.Add(CreateButton(tuple.color, null, selected || tuple.playerId == -1, selected));
                 }
                 break;
@@ -85,7 +83,7 @@ public class CustomizePanelHandler : MonoBehaviour
         {
             CreateTab(buttons);
         }
-        scrollPanelRect.position = new Vector3(scrollPanelRect.position.x, 0, scrollPanelRect.position.z);
+        m_ScrollPanelRect.position = new Vector3(m_ScrollPanelRect.position.x, 0, m_ScrollPanelRect.position.z);
     }
 
     public void CreateTab(List<GameObject> buttons)
@@ -97,7 +95,7 @@ public class CustomizePanelHandler : MonoBehaviour
         {
             if (horizontalPanel == null)
             {
-                horizontalPanel = Instantiate(horizontalPanelPrefab, Vector3.zero, Quaternion.identity);
+                horizontalPanel = Instantiate(m_HorizontalPanelPrefab, Vector3.zero, Quaternion.identity);
                 horizontalPanelCount++;
             }
 
@@ -105,21 +103,21 @@ public class CustomizePanelHandler : MonoBehaviour
 
             if (horizontalPanel.transform.childCount == 3)
             {
-                horizontalPanel.transform.SetParent(customizePanel.transform, false);
+                horizontalPanel.transform.SetParent(m_CustomizePanel.transform, false);
                 horizontalPanel = null;
             }
         }
         if (horizontalPanel != null)
         {
-            horizontalPanel.transform.SetParent(customizePanel.transform, false);
+            horizontalPanel.transform.SetParent(m_CustomizePanel.transform, false);
         }
 
-        scrollPanelRect.sizeDelta = new Vector2(scrollPanelRect.sizeDelta[0], horizontalPanelPrefab.GetComponent<RectTransform>().sizeDelta[1] * horizontalPanelCount);
+        m_ScrollPanelRect.sizeDelta = new Vector2(m_ScrollPanelRect.sizeDelta[0], m_HorizontalPanelPrefab.GetComponent<RectTransform>().sizeDelta[1] * horizontalPanelCount);
     }
 
     public void ClearTab()
     {
-        foreach (Transform child in customizePanel.transform)
+        foreach (Transform child in m_CustomizePanel.transform)
         {
             Destroy(child.gameObject);
         }
@@ -127,12 +125,12 @@ public class CustomizePanelHandler : MonoBehaviour
 
     private GameObject CreateButton(Color color, Texture texture, bool available, bool selected)
     {
-        GameObject btn = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity);
+        GameObject btn = Instantiate(m_ButtonPrefab, Vector3.zero, Quaternion.identity);
 
         CustomizeButtonHandler handler = btn.GetComponent<CustomizeButtonHandler>();
-        handler.SetItemType(currentTab);
-        handler.SetPlayerInfo(playerInfo);
-        if (currentTab == Enumerators.CustomizeItem.Color)
+        handler.SetItemType(m_CurrentTab);
+        handler.SetPlayerInfo(m_PlayerInfo);
+        if (m_CurrentTab == Enumerators.CustomizeItem.Color)
         {
             handler.SetColor(color);
         }
@@ -149,13 +147,13 @@ public class CustomizePanelHandler : MonoBehaviour
     
     private void OnColorAvailabilityChanges(SyncDictionary<Color, int>.Operation op, Color color, int playerId)
     {
-        if (currentTab == Enumerators.CustomizeItem.Color)
+        if (m_CurrentTab == Enumerators.CustomizeItem.Color)
         {
-            foreach(CustomizeButtonHandler child in customizePanel.GetComponentsInChildren<CustomizeButtonHandler>())
+            foreach(CustomizeButtonHandler child in m_CustomizePanel.GetComponentsInChildren<CustomizeButtonHandler>())
             {
                 if(color == child.GetColor())
                 {
-                    bool selected = playerInfo.GetPlayerId() == playerId;
+                    bool selected = m_PlayerInfo.GetPlayerId() == playerId;
 
                     child.ChangeAvailability(playerId == -1 || selected);
                     child.ChangeSelected(selected);
@@ -166,16 +164,16 @@ public class CustomizePanelHandler : MonoBehaviour
 
     private void SetColor(Color color)
     {
-        playerInfo?.SetDisplayColor(color);
+        m_PlayerInfo?.SetDisplayColor(color);
     }
 
     public void StartPreviewRotate(bool left)
     {
-        playerPreviewCameraController.ChangeRotation(left ? Enumerators.RotationType.Left : Enumerators.RotationType.Right);
+        m_PlayerPreviewCameraController.ChangeRotation(left ? Enumerators.RotationType.Left : Enumerators.RotationType.Right);
     }
 
     public void StopPreviewRotate()
     {
-        playerPreviewCameraController.ChangeRotation(Enumerators.RotationType.None);
+        m_PlayerPreviewCameraController.ChangeRotation(Enumerators.RotationType.None);
     }
 }

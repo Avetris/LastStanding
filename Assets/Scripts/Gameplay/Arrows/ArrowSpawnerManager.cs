@@ -8,24 +8,24 @@ using System.Linq;
 
 public class ArrowSpawnerManager : NetworkBehaviour
 {
-    private BallisticBehaviour[] ballistics;
+    private BallisticBehaviour[] m_Ballistics;
 
-    private float circlePonderation = 2f;
-    private int nextBallisticToShoot = 0;
-    private PlayerInfo player;
+    private float m_CirclePonderation = 2f;
+    private int m_NextBallisticToShoot = 0;
+    private PlayerInfo m_Player;
 
     private void Start()
     {
-        player = NetworkClient.connection.identity.GetComponent<PlayerInfo>();
+        m_Player = NetworkClient.connection.identity.GetComponent<PlayerInfo>();
 
-        ballistics = FindObjectsOfType<BallisticBehaviour>();
+        m_Ballistics = FindObjectsOfType<BallisticBehaviour>();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            CmdShootNextBallistic(player.GetPlayerPosition(), Enumerators.ArrowType.Normal);
+            CmdShootNextBallistic(m_Player.GetPlayerPosition(), Enumerators.ArrowType.Normal);
         }
     }
 
@@ -64,18 +64,18 @@ public class ArrowSpawnerManager : NetworkBehaviour
     [Command(ignoreAuthority = true)]
     private void CmdShootNextBallistic(Vector3 pos, Enumerators.ArrowType arrowType)
     {
-        ballistics[nextBallisticToShoot++].ShootArrow(pos, arrowType);
+        m_Ballistics[m_NextBallisticToShoot++].ShootArrow(pos, arrowType);
 
-        if (nextBallisticToShoot >= ballistics.Length)
+        if (m_NextBallisticToShoot >= m_Ballistics.Length)
         {
-            nextBallisticToShoot = 0;
+            m_NextBallisticToShoot = 0;
         }
 
     }
 
     private Vector3[] GetCirclePositions(int radius)
     {
-        int size = Mathf.RoundToInt(radius * 2 * Mathf.PI * circlePonderation);
+        int size = Mathf.RoundToInt(radius * 2 * Mathf.PI * m_CirclePonderation);
         float thetaScale = 1f / (size - 1f);
         Vector3[] positions = new Vector3[size];
 

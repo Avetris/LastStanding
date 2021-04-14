@@ -312,6 +312,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 7338228282475192132}
   m_maskType: 0
+  _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
 --- !u!1 &5980556031385318728
@@ -462,12 +463,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93be00f991f873e40ae2d0167183db3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backgroundImage: {fileID: 0}
-  image: {fileID: 4614807942699869075}
-  priceText: {fileID: 1334521319244653066}
-  notAvailableFilterGameObject: {fileID: 3257049844705631182}
-  selectedImageGameObject: {fileID: 7549472563227606440}
-  itemType: 0
+  m_BackgroundImage: {fileID: 0}
+  m_Image: {fileID: 4614807942699869075}
+  m_PriceText: {fileID: 1334521319244653066}
+  m_NotAvailableFilterGameObject: {fileID: 3257049844705631182}
+  m_SelectedImageGameObject: {fileID: 7549472563227606440}
+  m_ItemType: 0
 --- !u!1 &7549472563227606440
 GameObject:
   m_ObjectHideFlags: 0

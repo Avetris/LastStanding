@@ -4,9 +4,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerPreviewCameraController : MonoBehaviour
 {
-    [SerializeField] private Transform playerPreviewCamera;
-    [SerializeField] private Transform characterTransform;
-    [SerializeField] private float rotationSpeed = 70f;
+    [SerializeField] private Transform m_PlayerPreviewCamera;
+    [SerializeField] private Transform m_CharacterTransform;
+    [SerializeField] private float m_RotationSpeed = 70f;
 
     private DialogDisplayHandler dialogDisplayHandler;
 
@@ -14,7 +14,7 @@ public class PlayerPreviewCameraController : MonoBehaviour
 
     public void ChangePreviewCameraStatus(bool enable)
     {
-        playerPreviewCamera.gameObject.SetActive(enable);
+        m_PlayerPreviewCamera.gameObject.SetActive(enable);
     }
 
     public void ChangeRotation(Enumerators.RotationType newRotationType)
@@ -25,12 +25,12 @@ public class PlayerPreviewCameraController : MonoBehaviour
     private void Update() {
         if(rotating != Enumerators.RotationType.None)
         {
-            float direction = rotationSpeed * Time.deltaTime;
+            float direction = m_RotationSpeed * Time.deltaTime;
             if(rotating == Enumerators.RotationType.Left)
             {
                 direction *= -1;
             }
-            playerPreviewCamera.RotateAround(characterTransform.position, Vector3.up, direction);
+            m_PlayerPreviewCamera.RotateAround(m_CharacterTransform.position, Vector3.up, direction);
         }
     }
 }

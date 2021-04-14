@@ -16,14 +16,14 @@ public class PlayerControlller : NetworkBehaviour
 
     PlayerPreviewCameraController m_PlayerPreviewCameraController = null;
     PlayerAnimationController m_PlayerAnimationController;
-    Controls controls;
+    Controls m_Controls;
 
-    Vector2 currentMoveDirection = Vector2.zero;
-    private bool isRunning = false;
+    Vector2 m_CurrentMoveDirection = Vector2.zero;
+    private bool m_IsRunning = false;
 
     public bool IsRunning()
     {
-        return isRunning;
+        return m_IsRunning;
     }
 
     [ClientCallback]
@@ -44,36 +44,38 @@ public class PlayerControlller : NetworkBehaviour
     {
         if (isAlive && hasAuthority)
         {
-            controls.Enable();
+            m_Controls.Enable();
         }
         else
         {
-            controls.Disable();
+            m_Controls.Disable();
         }
     }
 
     [Client]
     private void InitInput()
     {
-        controls = new Controls();
+        m_Controls = new Controls();
 
-        controls.Player.Move.performed += SetMoveInput;
-        controls.Player.Move.canceled += SetMoveInput;
+        m_Controls.Player.Move.performed += SetMoveInput;
+        m_Controls.Player.Move.canceled += SetMoveInput;
 
-        controls.Player.Run.performed += SetRunInput;
-        controls.Player.Run.canceled += SetRunInput;
+        m_Controls.Player.Run.performed += SetRunInput;
+        m_Controls.Player.Run.canceled += SetRunInput;
 
-        controls.Player.Action.performed += SetDoActionInput;
+        m_Controls.Player.Action.performed += SetDoActionInput;
 
-        controls.Enable();
+        m_Controls.Enable();
     }
 
     private void SetMoveInput(InputAction.CallbackContext ctx)
     {
+        if(LobbyRoomManager.singleton.IsPaused()) { return; }
+
         DialogDisplayHandler dialogHandler = FindObjectOfType<DialogDisplayHandler>();
         if (dialogHandler == null || dialogHandler.GetOpenedPanel() == Enumerators.DialogType.None)
         {
-            currentMoveDirection = ctx.ReadValue<Vector2>();
+            m_CurrentMoveDirection = ctx.ReadValue<Vector2>();
         }
         else if (dialogHandler != null && dialogHandler.GetOpenedPanel() == Enumerators.DialogType.Customize)
         {
@@ -87,17 +89,17 @@ public class PlayerControlller : NetworkBehaviour
             {
                 m_PlayerPreviewCameraController.ChangeRotation(Enumerators.RotationType.None);
             }
-            currentMoveDirection = Vector2.zero;
+            m_CurrentMoveDirection = Vector2.zero;
         }
         else
         {
-            currentMoveDirection = Vector2.zero;
+            m_CurrentMoveDirection = Vector2.zero;
         }
     }
 
     private void SetRunInput(InputAction.CallbackContext ctx)
     {
-        isRunning = ctx.ReadValue<float>() > 0;
+        m_IsRunning = ctx.ReadValue<float>() > 0;
     }
 
     private void SetDoActionInput(InputAction.CallbackContext ctx)
@@ -153,7 +155,7 @@ public class PlayerControlller : NetworkBehaviour
     private void Update()
     {
         if (!hasAuthority) { return; }
-        CmdMove(currentMoveDirection, isRunning);
+        CmdMove(m_CurrentMoveDirection, m_IsRunning);
     }
 
     public override void OnStartClient()

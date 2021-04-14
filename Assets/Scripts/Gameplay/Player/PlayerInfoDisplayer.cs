@@ -5,8 +5,8 @@ using System;
 
 public class PlayerInfoDisplayer : MonoBehaviour
 {
-    [SerializeField] private Renderer[] colorRenderers = new Renderer[0];
-    [SerializeField] private TMP_Text nameText = null;
+    [SerializeField] private Renderer[] m_ColorRenderers = new Renderer[0];
+    [SerializeField] private TMP_Text m_NameText = null;
 
     private void Awake() {
         GetComponent<PlayerInfo>().ClientOnNameUpdated += OnNameChangeHandler;
@@ -20,12 +20,12 @@ public class PlayerInfoDisplayer : MonoBehaviour
 
     public void OnNameChangeHandler(string newName)
     {
-        nameText.text = newName;
+        m_NameText.text = newName;
     }
 
     public void OnColorChangeHandler(Color newColor)
     {
-        foreach (Renderer renderer in colorRenderers)
+        foreach (Renderer renderer in m_ColorRenderers)
         {
             renderer.material.SetColor("_BaseColor", newColor);
         }

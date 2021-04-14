@@ -6,70 +6,70 @@ using UnityEngine.UI;
 
 public class CustomizeButtonHandler : MonoBehaviour
 {
-    [SerializeField] private RawImage backgroundImage;
-    [SerializeField] private RawImage image;
-    [SerializeField] private TMP_Text priceText;
-    [SerializeField] private GameObject notAvailableFilterGameObject;
-    [SerializeField] private GameObject selectedImageGameObject;
+    [SerializeField] private RawImage m_BackgroundImage;
+    [SerializeField] private RawImage m_Image;
+    [SerializeField] private TMP_Text m_PriceText;
+    [SerializeField] private GameObject m_NotAvailableFilterGameObject;
+    [SerializeField] private GameObject m_SelectedImageGameObject;
 
-    private PlayerInfo playerInfo;
+    private PlayerInfo m_PlayerInfo;
 
-    public Enumerators.CustomizeItem itemType;
+    public Enumerators.CustomizeItem m_ItemType;
 
     public void SetPlayerInfo(PlayerInfo playerInfo)
     {
-        this.playerInfo = playerInfo;
+        m_PlayerInfo = playerInfo;
     }
 
     public void SetItemType(Enumerators.CustomizeItem type)
     {
-        itemType = type;
+        m_ItemType = type;
     }
 
     public void SetColor(Color color)
     {
-        image.color = color;
+        m_Image.color = color;
     }
 
     public Color GetColor()
     {
-        return image.color;
+        return m_Image.color;
     }
 
     public void SetImage(Texture texture)
     {
-        image.texture = texture;
+        m_Image.texture = texture;
     }
 
     public void ChangeAvailability(bool available)
     {
-        notAvailableFilterGameObject.SetActive(!available);
+        m_NotAvailableFilterGameObject.SetActive(!available);
     }
 
     public void ChangeSelected(bool selected)
     {
-        selectedImageGameObject.SetActive(selected);
+        m_SelectedImageGameObject.SetActive(selected);
     }
 
     public void SetPrice(int price)
     {
         if (price == 0)
         {
-            priceText.gameObject.SetActive(false);
+            m_PriceText.gameObject.SetActive(false);
         }
         else
         {
-            priceText.gameObject.SetActive(true);
-            priceText.text = $"{price}€";
+            m_PriceText.gameObject.SetActive(true);
+            m_PriceText.text = $"{price}€";
         }
     }
 
     public void OnClick()
     {
-        switch(itemType)
+        switch(m_ItemType)
         {
             case Enumerators.CustomizeItem.Color:
-                playerInfo.CmdSetDisplayColor(image.color);
+                m_PlayerInfo.CmdSetDisplayColor(m_Image.color);
                 break;
         }
     }

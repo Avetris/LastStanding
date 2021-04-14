@@ -1,39 +1,46 @@
+using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameplayButtonsHandler : MonoBehaviour
 {
-    [SerializeField] private Button actionButton = null;
-    [SerializeField] private Button settingsButton = null;
-    [SerializeField] private PlayerCollisionHandler playerCollisionHandler;
+    [SerializeField] private Button m_ActionButton = null;
+    [SerializeField] private Button m_SettingsButton = null;
+
+    private PlayerCollisionHandler m_PlayerCollisionHandler;
 
     private void Start()
     {
-        actionButton.interactable = false;
-        settingsButton.interactable = true;
+        m_ActionButton.interactable = false;
+        m_SettingsButton.interactable = true;
 
-        actionButton.onClick.AddListener(OnClick);
-        settingsButton.onClick.AddListener(OnSettingsClick);
+        m_ActionButton.onClick.AddListener(OnClick);
+        m_SettingsButton.onClick.AddListener(OnSettingsClick);
     }
 
     public void OnClick()
     {
-        if (playerCollisionHandler.GeActionTarget() != null)
+        if (m_PlayerCollisionHandler != null && m_PlayerCollisionHandler.GeActionTarget() != null)
         {
-            playerCollisionHandler.GeActionTarget().GetComponent<ActionObject>().OnClick();
+            m_PlayerCollisionHandler.GeActionTarget().GetComponent<ActionObject>().OnClick();
         }
     }
-    
+
     public void OnSettingsClick()
     {
-       FindObjectOfType<DialogDisplayHandler>().OpenPanel(Enumerators.DialogType.Settings);
+        FindObjectOfType<DialogDisplayHandler>().OpenPanel(Enumerators.DialogType.Settings);
     }
 
     private void Update()
-    {
-        if (playerCollisionHandler.GeActionTarget() != null)
+    {        
+        if (NetworkClient.connection.identity == null) { return; }
+        if (m_PlayerCollisionHandler == null)
         {
-            ActionObject actionObject = playerCollisionHandler.GeActionTarget().GetComponent<ActionObject>();
+            m_PlayerCollisionHandler = NetworkClient.connection.identity.GetComponent<PlayerCollisionHandler>();
+        }
+        if (m_PlayerCollisionHandler.GeActionTarget() != null)
+        {
+            ActionObject actionObject = m_PlayerCollisionHandler.GeActionTarget().GetComponent<ActionObject>();
 
             ChangeActionButtonIteractable(actionObject.CanUse());
         }
@@ -45,9 +52,9 @@ public class GameplayButtonsHandler : MonoBehaviour
 
     private void ChangeActionButtonIteractable(bool status)
     {
-        if(actionButton.interactable != status)
+        if (m_ActionButton.interactable != status)
         {
-            actionButton.interactable = status;
+            m_ActionButton.interactable = status;
         }
     }
 }

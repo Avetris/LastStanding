@@ -113,4 +113,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  arrowPrefab: {fileID: 4704607313234896470, guid: c6633c25dbd68f24e87e8bd8f1ed5f5a, type: 3}
+  m_ArrowPrefab: {fileID: 4704607313234896470, guid: c6633c25dbd68f24e87e8bd8f1ed5f5a, type: 3}
