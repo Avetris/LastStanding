@@ -42,5 +42,9 @@ MonoBehaviour:
     m_Localized: Shoes
     m_Metadata:
       m_Items: []
+  - m_Id: 6839667528785920
+    m_Localized: The game is no longer available.
+    m_Metadata:
+      m_Items: []
   references:
     version: 1

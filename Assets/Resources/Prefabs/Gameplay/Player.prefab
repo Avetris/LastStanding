@@ -67,7 +67,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 447
+    m_Bits: 959
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1994,7 +1994,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 512
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: 628df6b8127b244459bf68411755d50a, type: 2}
   m_TargetDisplay: 0
@@ -2649,7 +2649,7 @@ CharacterController:
   m_StepOffset: 0
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 1.1, z: 0}
 --- !u!137 &1830300855466646961
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -2760,11 +2760,11 @@ CapsuleCollider:
   m_GameObject: {fileID: 7460436239224338724}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
-  m_Radius: 0.5
+  m_Enabled: 1
+  m_Radius: 0.35
   m_Height: 2
-  m_Direction: 0
-  m_Center: {x: -0.5, y: 0.4, z: -0.45}
+  m_Direction: 1
+  m_Center: {x: 0, y: 1.1, z: 0}
 --- !u!1 &8463962948560831031
 GameObject:
   m_ObjectHideFlags: 0

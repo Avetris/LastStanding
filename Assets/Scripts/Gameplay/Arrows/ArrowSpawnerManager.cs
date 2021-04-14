@@ -14,45 +14,59 @@ public class ArrowSpawnerManager : NetworkBehaviour
     private int nextBallisticToShoot = 0;
     private PlayerInfo player;
 
-    private void Start() {
+    private void Start()
+    {
         player = NetworkClient.connection.identity.GetComponent<PlayerInfo>();
 
         ballistics = FindObjectsOfType<BallisticBehaviour>();
     }
 
-    private void Update() {
-        if(Input.GetKeyDown(KeyCode.Space))
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            ShootNextBallistic(player.GetPlayerPosition(), Enumerators.ArrowType.Normal);
+            CmdShootNextBallistic(player.GetPlayerPosition(), Enumerators.ArrowType.Normal);
         }
     }
 
     string radius = "10";
 
-    private void OnGUI() {
+    private void OnGUI()
+    {
         radius = GUI.TextField(new Rect(0, Screen.height - 40, 100, 20), radius);
 
-        if(GUI.Button(new Rect(110, Screen.height - 40, 100, 20), "Shoot"))
+        if (GUI.Button(new Rect(110, Screen.height - 40, 100, 20), "Shoot"))
         {
-            ShootCutCircle(Int16.Parse(radius));
+            CmdShootCutCircle(Int16.Parse(radius));
         }
-        
+
+        if (GUI.Button(new Rect(110, Screen.height - 60, 100, 20), "End Game"))
+        {
+            CmdEndGame();
+        }
     }
 
-    private void ShootCutCircle(int radius)
+    [Command(ignoreAuthority = true)]
+    public void CmdEndGame()
     {
+        ((CustomNetworkManager)NetworkManager.singleton).EndGame();
+    }
 
-        foreach(Vector3 pos in GetCirclePositions(radius))
-        {   
-            ShootNextBallistic(pos, Enumerators.ArrowType.Circle);
+    [Command(ignoreAuthority = true)]
+    private void CmdShootCutCircle(int radius)
+    {
+        foreach (Vector3 pos in GetCirclePositions(radius))
+        {
+            CmdShootNextBallistic(pos, Enumerators.ArrowType.Circle);
         }
     }
 
-    private void ShootNextBallistic(Vector3 pos, Enumerators.ArrowType arrowType)
+    [Command(ignoreAuthority = true)]
+    private void CmdShootNextBallistic(Vector3 pos, Enumerators.ArrowType arrowType)
     {
         ballistics[nextBallisticToShoot++].ShootArrow(pos, arrowType);
 
-        if(nextBallisticToShoot >= ballistics.Length)
+        if (nextBallisticToShoot >= ballistics.Length)
         {
             nextBallisticToShoot = 0;
         }
@@ -67,10 +81,11 @@ public class ArrowSpawnerManager : NetworkBehaviour
 
         float theta = 0.0f;
 
-        for(int i = 0; i < positions.Length; i++){          
-            theta += (2.0f * Mathf.PI * thetaScale);         
+        for (int i = 0; i < positions.Length; i++)
+        {
+            theta += (2.0f * Mathf.PI * thetaScale);
             float x = radius * Mathf.Cos(theta);
-            float z = radius * Mathf.Sin(theta);          
+            float z = radius * Mathf.Sin(theta);
             positions[i] = new Vector3(x, 0, z);
         }
         return positions;

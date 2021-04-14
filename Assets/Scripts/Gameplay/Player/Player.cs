@@ -18,6 +18,11 @@ public class Player : NetworkBehaviour
         SceneManager.activeSceneChanged += OnSceneChanged;
         Scene currentScene = SceneManager.GetActiveScene();
         OnSceneChanged(currentScene, currentScene);
+
+        if(hasAuthority)
+        {
+           GetComponentInChildren<CharacterController>().gameObject.layer = LayerMask.NameToLayer("OwnCharacter");
+        }
     }
 
     private void OnSceneChanged(Scene oldScene, Scene newScene)
@@ -28,7 +33,12 @@ public class Player : NetworkBehaviour
         playerCamera.SetActive(false);
         
         playerCamera.SetActive(hasAuthority);
-        m_PlayerUI.SetActive(hasAuthority);
+        m_PlayerUI.SetActive(hasAuthority);      
+
+        if(Constants.LobbyScene.Equals(newScene.name))
+        {   
+            this.Invoke(() => AuthorityOnPartyOwnerStateUpdated?.Invoke(isPartyOwner), .1f);
+        }
     }
 
     public void SetPartyOwner(bool partyOwner)

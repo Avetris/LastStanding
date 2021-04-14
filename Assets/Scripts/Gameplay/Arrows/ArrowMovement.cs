@@ -18,7 +18,7 @@ public class ArrowMovement : NetworkBehaviour
     // Use this for initialization
 
     private void OnCollisionChanged(bool lastState, bool newState)
-    {
+    {   
         AvoidMoving();
     }
 
@@ -72,19 +72,19 @@ public class ArrowMovement : NetworkBehaviour
     [ServerCallback]
     public void OnCollisionEnter(Collision other)
     {
-        ApplyCollision(other.gameObject.tag, other.gameObject.name, other);
+        ApplyCollision(other.gameObject.tag, other);
     }
 
-    private void ApplyCollision(string tag, string name, Collision other)
+    private void ApplyCollision(string tag, Collision other)
     {
-        if (tag == "Arrow") { return; }
+        if ("Arrow".Equals(tag)) { return; }
         if (collisionOccurred) { return; }
         AvoidMoving();
         // and a collision occurred
         collisionOccurred = true;
 
-        if (name == "Character")
-        {           
+        if ("Player".Equals(tag))
+        {        
             HittedPlayer(other.gameObject.GetComponentInParent<PlayerCollisionHandler>(), 
                          other.GetContact(0).point);
             other.gameObject.GetComponentInParent<PlayerInfo>().Kill();

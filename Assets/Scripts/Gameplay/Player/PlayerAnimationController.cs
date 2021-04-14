@@ -2,6 +2,7 @@ using UnityEngine;
 using Mirror;
 using TMPro;
 using System;
+using System.Runtime.CompilerServices;
 
 public class PlayerAnimationController : NetworkBehaviour
 {
@@ -26,20 +27,29 @@ public class PlayerAnimationController : NetworkBehaviour
 
     public void UpdateCollisionOnDeath(float death)
     {
-        GetComponentInChildren<CapsuleCollider>().enabled = death == 1.0f;
-        GetComponentInChildren<CharacterController>().enabled = death == 0.0f;
+        CapsuleCollider capsuleCollider = GetComponentInChildren<CapsuleCollider>();
 
-        Vector3 collisionCenter = GetComponentInChildren<CapsuleCollider>().center;
-
-        if (((CustomNetworkManager)NetworkManager.singleton).GetSetting(Enumerators.GameSetting.DeathCollisions, true))
+        if(death == 1.0f)
         {
-            collisionCenter.y = .4f;
+            if (LobbyRoomManager.singleton.GetSetting(Enumerators.GameSetting.DeathCollisions, true))
+            {
+                capsuleCollider.center = new Vector3(-0.5f, 0.4f, -0.45f);
+            }
+            else
+            {
+                capsuleCollider.center = new Vector3(-0.5f, 0, -0.45f);
+            }
+            capsuleCollider.radius = 0.5f;
+            capsuleCollider.direction = 0;
         }
         else
         {
-            collisionCenter.y = 0f;
+            capsuleCollider.center = new Vector3(0, 1.1f, 0);
+            capsuleCollider.radius = 0.35f;
+            capsuleCollider.direction = 1;
         }
-        GetComponentInChildren<CapsuleCollider>().center = collisionCenter;
+
+
     }
 
     [ClientRpc]

@@ -5,14 +5,14 @@ using Mirror;
 using System;
 using UnityEngine.SceneManagement;
 using UnityEngine.Localization.Settings;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 public class CustomNetworkManager : NetworkManager
 {
     [SerializeField] private GameOverHandler gameOverHandler = null;
 
     private int nextPlayerId = 0;
-
-    public Dictionary<Enumerators.GameSetting, string> gameSetting = new Dictionary<Enumerators.GameSetting, string>();
 
     private bool isGameInProgress = false;
 
@@ -21,7 +21,6 @@ public class CustomNetworkManager : NetworkManager
     public static event Action ClientOnConnected;
     public static event Action ClientOnDisconnected;
     public static event Action<int> PlayerNumberUpdated;
-    public static event Action<Enumerators.GameSetting> GameSettingsUpdated;
 
     public override void Start()
     {
@@ -77,6 +76,12 @@ public class CustomNetworkManager : NetworkManager
         ServerChangeScene("GameScene");
     }
 
+    public void EndGame()
+    { 
+        isGameInProgress = false;
+        ServerChangeScene(Constants.LobbyScene);
+    }
+
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
@@ -100,7 +105,7 @@ public class CustomNetworkManager : NetworkManager
 
     public override void OnServerSceneChanged(string sceneName)
     {
-        if (SceneManager.GetActiveScene().name.StartsWith("GameScene"))
+        if (SceneManager.GetActiveScene().name.StartsWith(Constants.GameScene))
         {
             // GameOverHandler gameOverHandleInstance = Instantiate(gameOverHandler);
             // NetworkServer.Spawn(gameOverHandleInstance.gameObject);
@@ -109,24 +114,6 @@ public class CustomNetworkManager : NetworkManager
             {
                 player.transform.position = GetStartPosition().position;
             }
-        }
-    }
-
-    public void ChangeSetting<T>(Enumerators.GameSetting variable, T newValue)
-    {
-        gameSetting[variable] = newValue.ToString();
-        GameSettingsUpdated?.Invoke(variable);
-    }
-
-    public T GetSetting<T>(Enumerators.GameSetting variable, T defaultValue)
-    {
-        if (gameSetting.ContainsKey(variable))
-        {
-            return (T) Convert.ChangeType(gameSetting[variable], typeof(T));
-        }
-        else
-        {
-            return defaultValue;
         }
     }
 
@@ -144,9 +131,12 @@ public class CustomNetworkManager : NetworkManager
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
-       
-        string message = LocalizeManager.singleton.GetText("max_players_limit");
-        EventManager.singleton.CreateEvent<string>(Constants.MenuScene, EventType.Message, message);
+
+        string message = GetExitError();
+        if (message != null)
+        {
+            EventManager.singleton.CreateEvent<string>(Constants.MenuScene, EventType.Message, message);
+        }
 
         ClientOnDisconnected?.Invoke();
     }
@@ -157,4 +147,17 @@ public class CustomNetworkManager : NetworkManager
     }
 
     #endregion
+
+
+    public string GetExitError()
+    {
+        string error = null;
+
+        if (!isGameInProgress) { error = LocalizeManager.singleton.GetText("max_players_limit"); }
+        else if (LobbyRoomManager.singleton.GetSetting<int>(Enumerators.GameSetting.MaxPlayers, Constants.MaxPlayers) == Players.Count - 1)
+        {
+            error = LocalizeManager.singleton.GetText("game_not_available");
+        }
+        return error;
+    }
 }

@@ -8,7 +8,7 @@ public class Enumerators
 
     public enum RotationType { None, Right, Left }
 
-    public enum GameSetting { FullBots, ArrowSpanwNumber, ArrowTimeSpawn, ArrowCircleTime, ArrowCircleRadius, DeathCollisions};
+    public enum GameSetting { MaxPlayers, MinPlayers, FullBots, ArrowSpanwNumber, ArrowTimeSpawn, ArrowCircleTime, ArrowCircleRadius, DeathCollisions};
 
     public enum ArrowType {Normal, Fire, Circle}
 

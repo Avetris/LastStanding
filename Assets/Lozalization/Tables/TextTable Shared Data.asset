@@ -39,6 +39,10 @@ MonoBehaviour:
     m_Key: shoes
     m_Metadata:
       m_Items: []
+  - m_Id: 6839667528785920
+    m_Key: game_not_available
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

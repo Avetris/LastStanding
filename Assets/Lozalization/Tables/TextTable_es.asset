@@ -42,5 +42,9 @@ MonoBehaviour:
     m_Localized: Pies
     m_Metadata:
       m_Items: []
+  - m_Id: 6839667528785920
+    m_Localized: "La partida ya no est\xE1 disponible."
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
