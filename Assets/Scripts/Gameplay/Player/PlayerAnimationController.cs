@@ -27,7 +27,7 @@ public class PlayerAnimationController : NetworkBehaviour
 
     public void UpdateCollisionOnDeath(float death)
     {
-        CapsuleCollider capsuleCollider = GetComponentInChildren<CapsuleCollider>();
+        CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
 
         if(death == 1.0f)
         {

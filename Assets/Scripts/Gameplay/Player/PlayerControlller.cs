@@ -107,10 +107,10 @@ public class PlayerControlller : NetworkBehaviour
         if (ctx.ReadValue<float>() > 0)
         {
             DialogDisplayHandler dialogHandler = FindObjectOfType<DialogDisplayHandler>();
-            if (dialogHandler == null || dialogHandler.GetOpenedPanel() == Enumerators.DialogType.None)
-            {
-                GetComponentInChildren<GameplayButtonsHandler>().OnClick();
-            }
+            // if (dialogHandler == null || dialogHandler.GetOpenedPanel() == Enumerators.DialogType.None)
+            // {
+            //     GetComponentInChildren<GameplayButtonsHandler>().OnClick();
+            // }
         }
     }
 
@@ -154,7 +154,7 @@ public class PlayerControlller : NetworkBehaviour
     [ClientCallback]
     private void Update()
     {
-        if (!hasAuthority) { return; }
+        if (!hasAuthority || !NetworkClient.ready) { return; }
         CmdMove(m_CurrentMoveDirection, m_IsRunning);
     }
 

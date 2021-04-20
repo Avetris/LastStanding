@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 public class PlayerPreviewCameraController : MonoBehaviour
 {
     [SerializeField] private Transform m_PlayerPreviewCamera;
-    [SerializeField] private Transform m_CharacterTransform;
     [SerializeField] private float m_RotationSpeed = 70f;
 
     private DialogDisplayHandler dialogDisplayHandler;
@@ -30,7 +29,7 @@ public class PlayerPreviewCameraController : MonoBehaviour
             {
                 direction *= -1;
             }
-            m_PlayerPreviewCamera.RotateAround(m_CharacterTransform.position, Vector3.up, direction);
+            m_PlayerPreviewCamera.RotateAround(transform.position, Vector3.up, direction);
         }
     }
 }

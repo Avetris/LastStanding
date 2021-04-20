@@ -7,18 +7,21 @@ public class FaceCamera : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        ResetMainCamera();
+        ResetMainCamera(Camera.main.transform);
     }
 
-    public void ResetMainCamera()
+    public void ResetMainCamera(Transform transform)
     {
-        mainCameraTransform = Camera.main.transform;
+        mainCameraTransform = transform;
     }
 
     private void LateUpdate()
     {
-        transform.LookAt(
-            transform.position + mainCameraTransform.rotation * Vector3.forward,
-            mainCameraTransform.rotation * Vector3.up);
+        if (mainCameraTransform != null)
+        {
+            transform.LookAt(
+                transform.position + mainCameraTransform.rotation * Vector3.forward,
+                mainCameraTransform.rotation * Vector3.up);
+        }
     }
 }

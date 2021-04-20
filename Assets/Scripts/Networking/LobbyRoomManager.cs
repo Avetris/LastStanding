@@ -142,7 +142,7 @@ public class LobbyRoomManager : NetworkBehaviour
         return m_IsPaused;
     }
 
-
+    [Server]
     private void Start()
     {
         if (FindObjectsOfType<LobbyRoomManager>().Length > 1)
@@ -154,6 +154,8 @@ public class LobbyRoomManager : NetworkBehaviour
 
         SceneManager.activeSceneChanged += OnSceneChanged;
         Scene currentScene = SceneManager.GetActiveScene();
+
+        OnSceneChanged(SceneManager.GetActiveScene(), SceneManager.GetActiveScene());
     }
 
     private void OnDestroy()

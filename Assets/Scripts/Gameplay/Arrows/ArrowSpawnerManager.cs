@@ -46,13 +46,13 @@ public class ArrowSpawnerManager : NetworkBehaviour
         }
     }
 
-    [Command(ignoreAuthority = true)]
+    [Command(requiresAuthority = false)]
     public void CmdEndGame()
     {
         ((CustomNetworkManager)NetworkManager.singleton).EndGame();
     }
 
-    [Command(ignoreAuthority = true)]
+    [Command(requiresAuthority = false)]
     private void CmdShootCutCircle(int radius)
     {
         foreach (Vector3 pos in GetCirclePositions(radius))
@@ -61,7 +61,7 @@ public class ArrowSpawnerManager : NetworkBehaviour
         }
     }
 
-    [Command(ignoreAuthority = true)]
+    [Command(requiresAuthority = false)]
     private void CmdShootNextBallistic(Vector3 pos, Enumerators.ArrowType arrowType)
     {
         m_Ballistics[m_NextBallisticToShoot++].ShootArrow(pos, arrowType);

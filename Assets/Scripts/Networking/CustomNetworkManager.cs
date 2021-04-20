@@ -86,6 +86,8 @@ public class CustomNetworkManager : NetworkManager
     {
         base.OnServerAddPlayer(conn);
 
+        Debug.Log("OnServerAddPlayer");
+
         Player player = conn.identity.GetComponent<Player>();
 
         Players.Add(conn.identity.GetComponent<Player>());
@@ -110,9 +112,21 @@ public class CustomNetworkManager : NetworkManager
             // GameOverHandler gameOverHandleInstance = Instantiate(gameOverHandler);
             // NetworkServer.Spawn(gameOverHandleInstance.gameObject);
 
-            foreach (Player player in Players)
+            for (int i = 0; i < Players.Count; i++)
             {
-                player.transform.position = GetStartPosition().position;
+                // GameObject newPlayer = Instantiate(playerPrefab);
+                // newPlayer.GetComponent<PlayerInfo>().SetData(Players[i].GetComponent<PlayerInfo>());
+
+                // // Instantiate the new player object and broadcast to clients
+                // NetworkServer.ReplacePlayerForConnection(Players[i].connectionToClient, newPlayer);
+
+                // // Remove the previous player object that's now been replaced
+                // NetworkServer.Destroy(Players[i].gameObject);
+
+                // Players[i] = newPlayer.GetComponent<Player>();
+                
+                // player.transform.position = GetStartPosition().position;
+                // player.ResetEveryPosition(GetStartPosition().position);
             }
         }
     }

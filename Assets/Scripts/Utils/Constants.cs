@@ -8,6 +8,6 @@ public class Constants{
     #endregion
 
     public static int MaxPlayers = 10;
-    public static int MinPlayers = 1;
+    public static int MinPlayers = 0;
 
 }

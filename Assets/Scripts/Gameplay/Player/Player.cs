@@ -5,8 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class Player : NetworkBehaviour
 {
-    [SerializeField] private GameObject m_PlayerCamera;
-
     [SyncVar(hook = nameof(OnAuthorityPartyOwnerStateUpdated))]
     private bool m_IsPartyOwner = false;
 
@@ -18,24 +16,26 @@ public class Player : NetworkBehaviour
         Scene currentScene = SceneManager.GetActiveScene();
         OnSceneChanged(currentScene, currentScene);
 
-        if(hasAuthority)
+        if (hasAuthority)
         {
-           GetComponentInChildren<CharacterController>().gameObject.layer = LayerMask.NameToLayer("OwnCharacter");
+            GetComponent<CharacterController>().gameObject.layer = LayerMask.NameToLayer("OwnCharacter");
         }
     }
+
 
     private void OnSceneChanged(Scene oldScene, Scene newScene)
     {
         if (this == null || gameObject == null) { return; }
 
-        GetComponentInChildren<FaceCamera>().ResetMainCamera();
-        m_PlayerCamera.SetActive(false);
-        
-        m_PlayerCamera.SetActive(hasAuthority);
+        if(!hasAuthority) { return; }
 
-        if(Constants.LobbyScene.Equals(newScene.name))
-        {   
+        if (Constants.LobbyScene.Equals(newScene.name))
+        {
             this.Invoke(() => AuthorityOnPartyOwnerStateUpdated?.Invoke(m_IsPartyOwner), .1f);
+        }
+        else
+        {
+            this.Invoke(() => AuthorityOnPartyOwnerStateUpdated?.Invoke(false), .1f);
         }
     }
 
