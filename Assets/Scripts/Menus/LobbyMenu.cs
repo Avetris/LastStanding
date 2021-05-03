@@ -16,13 +16,13 @@ public class LobbyMenu : MonoBehaviour
     private void Start()
     {
         CustomNetworkManager.ClientOnConnected += HandleClientConnect;
-        Player.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
+        // Player.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
     }
 
     private void OnDestroy()
     {
         CustomNetworkManager.ClientOnConnected -= HandleClientConnect;
-        Player.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
+        // Player.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
     }
 
     private void AuthorityHandlePartyOwnerStateUpdated(bool state)
@@ -37,7 +37,7 @@ public class LobbyMenu : MonoBehaviour
 
     public void StartGame()
     {
-        NetworkClient.connection.identity.GetComponent<Player>().CmdStartGame();
+        // NetworkClient.connection.identity.GetComponent<Player>().CmdStartGame();
     }
 
     public void LeaveLobby()

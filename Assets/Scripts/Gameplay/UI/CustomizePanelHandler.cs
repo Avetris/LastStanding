@@ -24,7 +24,7 @@ public class CustomizePanelHandler : MonoBehaviour
     {
         if (m_PlayerInfo == null)
         {
-            m_PlayerInfo = NetworkClient.connection.identity.GetComponent<PlayerInfo>();         
+            m_PlayerInfo = NetworkClient.connection.identity.GetComponent<PlayerInfo>();
             m_PlayerPreviewCameraController = NetworkClient.connection.identity.GetComponent<PlayerPreviewCameraController>();
         }
         m_PlayerPreviewCameraController.ChangePreviewCameraStatus(true);
@@ -42,19 +42,14 @@ public class CustomizePanelHandler : MonoBehaviour
 
     private void OnDisable()
     {
-        OnTabChange(Enumerators.CustomizeItem.None);
+        ChangeTab(Enumerators.CustomizeItem.None);
         m_PlayerPreviewCameraController.ChangePreviewCameraStatus(false);
     }
 
-    public void ChangeTab(int tab)
-    {
-        OnTabChange((Enumerators.CustomizeItem) tab);
-    }
-
-    public void OnTabChange(Enumerators.CustomizeItem tab)
+    public void ChangeTab(Enumerators.CustomizeItem tab)
     {
         if (tab == m_CurrentTab) { return; }
-        
+
         ClearTab();
 
         if (m_CurrentTab == Enumerators.CustomizeItem.Color)
@@ -79,7 +74,7 @@ public class CustomizePanelHandler : MonoBehaviour
                 }
                 break;
         }
-        if(buttons.Count > 0)
+        if (buttons.Count > 0)
         {
             CreateTab(buttons);
         }
@@ -144,14 +139,14 @@ public class CustomizePanelHandler : MonoBehaviour
 
         return btn;
     }
-    
+
     private void OnColorAvailabilityChanges(SyncDictionary<Color, int>.Operation op, Color color, int playerId)
     {
         if (m_CurrentTab == Enumerators.CustomizeItem.Color)
         {
-            foreach(CustomizeButtonHandler child in m_CustomizePanel.GetComponentsInChildren<CustomizeButtonHandler>())
+            foreach (CustomizeButtonHandler child in m_CustomizePanel.GetComponentsInChildren<CustomizeButtonHandler>())
             {
-                if(color == child.GetColor())
+                if (color == child.GetColor())
                 {
                     bool selected = m_PlayerInfo.GetPlayerId() == playerId;
 

@@ -8,7 +8,7 @@ namespace Mirror
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Network/NetworkRoomPlayer")]
-    [HelpURL("https://mirror-networking.com/docs/Articles/Components/NetworkRoomPlayer.html")]
+    [HelpURL("https://mirror-networking.gitbook.io/docs/components/network-room-player")]
     public class NetworkRoomPlayer : NetworkBehaviour
     {
         /// <summary>
@@ -67,7 +67,7 @@ namespace Mirror
             if (NetworkClient.active && NetworkManager.singleton is NetworkRoomManager room)
             {
                 // only need to call this on client as server removes it before object is destroyed
-                room.roomSlots.Remove(this);
+                // room.roomSlots.Remove(this);
 
                 room.CallOnClientExitRoom();
             }

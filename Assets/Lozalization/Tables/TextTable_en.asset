@@ -46,5 +46,9 @@ MonoBehaviour:
     m_Localized: The game is no longer available.
     m_Metadata:
       m_Items: []
+  - m_Id: 12215948097064960
+    m_Localized: Main Menu
+    m_Metadata:
+      m_Items: []
   references:
     version: 1

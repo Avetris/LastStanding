@@ -43,6 +43,10 @@ MonoBehaviour:
     m_Key: game_not_available
     m_Metadata:
       m_Items: []
+  - m_Id: 12215948097064960
+    m_Key: main_menu_title
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

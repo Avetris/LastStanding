@@ -4,19 +4,19 @@ using UnityEngine;
 using Mirror;
 using System;
 using UnityEngine.SceneManagement;
-using UnityEngine.Localization.Settings;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using Messaging;
 
 public class CustomNetworkManager : NetworkManager
 {
-    [SerializeField] private GameOverHandler gameOverHandler = null;
+    [SerializeField] private GameOverHandler m_GameOverHandler = null;
 
-    private int nextPlayerId = 0;
+    private int m_nextPlayerId = 0;
 
-    private bool isGameInProgress = false;
+    private bool m_IsGameInProgress = false;
 
-    public List<Player> Players { get; } = new List<Player>();
+    // public List<RoomPlayer> Players { get; } = new List<RoomPlayer>();
+    public int[] m_RespawnPlayersPoints = new int[0];
 
     public static event Action ClientOnConnected;
     public static event Action ClientOnDisconnected;
@@ -29,29 +29,47 @@ public class CustomNetworkManager : NetworkManager
             if (spawnablePrefab.GetComponent<NetworkIdentity>() != null)
                 spawnPrefabs.Add(spawnablePrefab);
         }
+
         base.Start();
     }
 
     #region Server
-    [Server]
-    public void ChangePlayerList(bool add, Player player)
-    {
-        if (add)
-        {
-            Players.Add(player);
-        }
-        else
-        {
-            Players.Remove(player);
-        }
-        PlayerNumberUpdated?.Invoke(Players.Count);
-    }
+
+    // [Server]
+    // public void ChangePlayerList(Player player, bool add)
+    // {
+        // if (add)
+        // {
+        //     Players.Add(player);
+        // }
+        // else
+        // {
+        //     Players.Remove(player);
+        //     RemoveSpawnPosition(player.GetComponent<PlayerInfo>().GetPlayerId());
+        // }
+        // PlayerNumberUpdated?.Invoke(Players.Count);
+    // }
 
     public override void OnServerConnect(NetworkConnection conn)
     {
-        if (!isGameInProgress) { return; }
+        if (m_IsGameInProgress)
+        {            
+            Notification notif = new Notification(){content = "Testing message"};
 
-        conn.Disconnect();
+            conn.Send(notif, Channels.Reliable);
+
+            Debug.Log("Message Sended");
+
+            conn.Disconnect();
+            return;
+        }
+
+        if (m_RespawnPlayersPoints == null)
+        {
+            int maxPlayers = LobbyRoomManager.singleton.GetSetting<int>(Enumerators.GameSetting.MaxPlayers, Constants.MaxPlayers);
+            m_RespawnPlayersPoints = new int[maxPlayers];
+            for (int i = 0; i < maxPlayers; i++) m_RespawnPlayersPoints[i] = -1;
+        }
     }
 
     public override void OnStopServer()
@@ -62,23 +80,23 @@ public class CustomNetworkManager : NetworkManager
             Destroy(lobbyRoomManager.gameObject);
         }
 
-        Players.Clear();
+        // Players.Clear();
 
-        isGameInProgress = false;
+        m_IsGameInProgress = false;
     }
 
     public void StartGame()
     {
-        if (!LobbyRoomManager.singleton.CanStartGame()) { return; }
+        // if (!LobbyRoomManager.singleton.CanStartGame()) { return; }
 
-        isGameInProgress = true;
+        m_IsGameInProgress = true;
 
         ServerChangeScene("GameScene");
     }
 
     public void EndGame()
-    { 
-        isGameInProgress = false;
+    {
+        m_IsGameInProgress = false;
         ServerChangeScene(Constants.LobbyScene);
     }
 
@@ -86,47 +104,74 @@ public class CustomNetworkManager : NetworkManager
     {
         base.OnServerAddPlayer(conn);
 
-        Debug.Log("OnServerAddPlayer");
+        // Player player = conn.identity.GetComponent<Player>();
 
-        Player player = conn.identity.GetComponent<Player>();
+        // ChangePlayerList(conn.identity.GetComponent<Player>(), true);
 
-        Players.Add(conn.identity.GetComponent<Player>());
+        // PlayerInfo playerInfo = conn.identity.GetComponent<PlayerInfo>();
 
-        PlayerInfo playerInfo = conn.identity.GetComponent<PlayerInfo>();
+        // playerInfo.SetDisplayName($"Player {Players.Count}");
+        // playerInfo.SetPlayerId(m_nextPlayerId);
+        // playerInfo.SetDisplayColor(LobbyRoomManager.singleton.GetNextColor(m_nextPlayerId));
 
-        playerInfo.SetDisplayName($"Player {Players.Count}");
-        playerInfo.SetPlayerId(nextPlayerId);
-        playerInfo.SetDisplayColor(LobbyRoomManager.singleton.GetNextColor(nextPlayerId));
+        // player.transform.position = GetNextRespawnPosition(m_nextPlayerId, true);
 
-        nextPlayerId++;
+        // m_nextPlayerId++;
 
-        player.SetPartyOwner(Players.Count == 1);
+        // player.SetPartyOwner(Players.Count == 1);
 
-        PlayerNumberUpdated?.Invoke(Players.Count);
+        // PlayerNumberUpdated?.Invoke(Players.Count);
     }
 
     public override void OnServerSceneChanged(string sceneName)
     {
-        if (SceneManager.GetActiveScene().name.StartsWith(Constants.GameScene))
+        // if (SceneManager.GetActiveScene().name.StartsWith(Constants.GameScene))
+        // {
+        // GameOverHandler gameOverHandleInstance = Instantiate(gameOverHandler);
+        // NetworkServer.Spawn(gameOverHandleInstance.gameObject);
+
+        // foreach (Player player in Players)
+        // {
+        //     player.transform.position = GetNextRespawnPosition(player.GetComponent<PlayerInfo>().GetPlayerId());
+        // }
+        // }
+    }
+
+    public Vector3 GetNextRespawnPosition(int idPlayer, bool isNew = false)
+    {
+        int respawnPos = 0;
+        if (isNew)
         {
-            // GameOverHandler gameOverHandleInstance = Instantiate(gameOverHandler);
-            // NetworkServer.Spawn(gameOverHandleInstance.gameObject);
-
-            for (int i = 0; i < Players.Count; i++)
+            for (; respawnPos < m_RespawnPlayersPoints.Count(); respawnPos++)
             {
-                // GameObject newPlayer = Instantiate(playerPrefab);
-                // newPlayer.GetComponent<PlayerInfo>().SetData(Players[i].GetComponent<PlayerInfo>());
+                if (m_RespawnPlayersPoints[respawnPos] <= 0)
+                {
+                    m_RespawnPlayersPoints[respawnPos] = idPlayer;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (; respawnPos < m_RespawnPlayersPoints.Count(); respawnPos++)
+            {
+                if (m_RespawnPlayersPoints[respawnPos] == idPlayer)
+                {
+                    break;
+                }
+            }
+        }
+        return respawnPos >= 0 ? startPositions[respawnPos].position : Vector3.zero;
+    }
 
-                // // Instantiate the new player object and broadcast to clients
-                // NetworkServer.ReplacePlayerForConnection(Players[i].connectionToClient, newPlayer);
-
-                // // Remove the previous player object that's now been replaced
-                // NetworkServer.Destroy(Players[i].gameObject);
-
-                // Players[i] = newPlayer.GetComponent<Player>();
-                
-                // player.transform.position = GetStartPosition().position;
-                // player.ResetEveryPosition(GetStartPosition().position);
+    private void RemoveSpawnPosition(int idPlayer)
+    {
+        for (int respawnPos = 0; respawnPos < m_RespawnPlayersPoints.Count(); respawnPos++)
+        {
+            if (m_RespawnPlayersPoints[respawnPos] == idPlayer)
+            {
+                m_RespawnPlayersPoints[respawnPos] = -1;
+                break;
             }
         }
     }
@@ -136,7 +181,7 @@ public class CustomNetworkManager : NetworkManager
     #region Client
 
     public override void OnClientConnect(NetworkConnection conn)
-    {
+    {        
         base.OnClientConnect(conn);
 
         ClientOnConnected?.Invoke();
@@ -144,20 +189,32 @@ public class CustomNetworkManager : NetworkManager
 
     public override void OnClientDisconnect(NetworkConnection conn)
     {
+        Debug.Log("Cliente desconectado");
+        LobbyRoomManager lobbyRoomManager = LobbyRoomManager.singleton;
+        if (lobbyRoomManager != null)
+        {
+            Debug.Log("Destroying lobby room manager");
+            Destroy(lobbyRoomManager.gameObject);
+        }
+        else
+        {            
+            Debug.Log("lobby room manager not found");
+        }
         base.OnClientDisconnect(conn);
 
-        string message = GetExitError();
-        if (message != null)
-        {
-            EventManager.singleton.CreateEvent<string>(Constants.MenuScene, EventType.Message, message);
-        }
+        // string message = GetExitError();
+        // Debug.Log("Error " + message);
+        // if (message != null)
+        // {
+        //     EventManager.singleton.CreateEvent<string>(Constants.MenuScene, EventType.Message, message);
+        // }
 
         ClientOnDisconnected?.Invoke();
     }
 
     public override void OnStopClient()
     {
-        Players.Clear();
+        // Players.Clear();
     }
 
     #endregion
@@ -167,10 +224,21 @@ public class CustomNetworkManager : NetworkManager
     {
         string error = null;
 
-        if (!isGameInProgress) { error = LocalizeManager.singleton.GetText("max_players_limit"); }
-        else if (LobbyRoomManager.singleton.GetSetting<int>(Enumerators.GameSetting.MaxPlayers, Constants.MaxPlayers) == Players.Count - 1)
+
+        Debug.Log("GetExitError " + m_IsGameInProgress);
+        Debug.Log("GetExitError " + SceneManager.GetActiveScene().name);
+        Debug.Log("GetExitError " + LobbyRoomManager.singleton);
+
+
+        if (m_IsGameInProgress)
         {
+            Debug.Log("Game not available");
             error = LocalizeManager.singleton.GetText("game_not_available");
+        }
+        // else if (LobbyRoomManager.singleton.GetSetting<int>(Enumerators.GameSetting.MaxPlayers, Constants.MaxPlayers) == Players.Count - 1)
+        {
+            Debug.Log("max_players_limit");
+            error = LocalizeManager.singleton.GetText("max_players_limit");
         }
         return error;
     }

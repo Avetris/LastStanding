@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6642615978487215699}
-  - component: {fileID: 2461833159008592477}
+  - component: {fileID: 2807435739643491676}
   - component: {fileID: 6662383040364666144}
-  - component: {fileID: 6595004421437521196}
+  - component: {fileID: 2754783239774554741}
   m_Layer: 0
   m_Name: Network Manager
   m_TagString: Untagged
@@ -33,7 +33,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2461833159008592477
+--- !u!114 &2807435739643491676
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,7 +42,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8026405548227016870}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fc9a4127cc86ef429c35fab1e8f6d5a, type: 3}
+  m_Script: {fileID: 11500000, guid: 0d4f894ebf51c2a4a8e858e5be787106, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
@@ -50,21 +50,30 @@ MonoBehaviour:
   runInBackground: 1
   autoStartServerBuild: 1
   serverTickRate: 30
-  serverBatching: 0
+  serverBatching: 1
   serverBatchInterval: 0
   offlineScene: Assets/Scenes/MainMenuScene.unity
   onlineScene: Assets/Scenes/LobbyScene.unity
   transport: {fileID: 6662383040364666144}
   networkAddress: localhost
-  maxConnections: 4
-  disconnectInactiveConnections: 0
+  maxConnections: 100
+  disconnectInactiveConnections: 1
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 706770072257986932, guid: d4bacd0a6512e384eb957b1bd44b6201, type: 3}
+  playerPrefab: {fileID: 4557960068555605102, guid: d388279d7439b71438982e6be23e96a9, type: 3}
   autoCreatePlayer: 1
-  playerSpawnMethod: 0
+  playerSpawnMethod: 1
   spawnPrefabs: []
-  gameOverHandler: {fileID: 0}
+  showRoomGUI: 1
+  minPlayers: 1
+  roomPlayerPrefab: {fileID: 8985105085002147346, guid: fe5702da9b6b18546a9bffb1529e67da, type: 3}
+  RoomScene: Assets/Scenes/LobbyScene.unity
+  GameplayScene: Assets/Scenes/GameScene.unity
+  _allPlayersReady: 1
+  roomSlots: []
+  clientIndex: 0
+  m_LobbyRoomManagerPrefab: {fileID: 3967906330094009760, guid: 940e424c5f20c2b4a8f0893d3260a5e3, type: 3}
+  m_RespawnPlayersPoints: 
 --- !u!114 &6662383040364666144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,7 +96,7 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
---- !u!114 &6595004421437521196
+--- !u!114 &2754783239774554741
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

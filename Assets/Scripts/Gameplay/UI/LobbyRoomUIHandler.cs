@@ -10,16 +10,16 @@ public class LobbyRoomUIHandler : NetworkBehaviour
 
     private void Start()
     {
-        Player.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
-        LobbyRoomManager.OnStartGameStatusChanges += HandleStartGameStatus;
+        // Player.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
+        CustomNetworkRoomManager.OnStartGameStatusChanges += HandleStartGameStatus;
 
         startGameButton.interactable = false;
     }
 
     private void OnDestroy()
     {
-        Player.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
-        LobbyRoomManager.OnStartGameStatusChanges -= HandleStartGameStatus;
+        // Player.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
+        CustomNetworkRoomManager.OnStartGameStatusChanges -= HandleStartGameStatus;
     }
 
     private void AuthorityHandlePartyOwnerStateUpdated(bool state)
@@ -40,6 +40,6 @@ public class LobbyRoomUIHandler : NetworkBehaviour
 
     public void StartGame()
     {
-        NetworkClient.connection.identity.GetComponent<Player>().CmdStartGame();
+        // NetworkClient.connection.identity.GetComponent<Player>().CmdStartGame();
     }
 }

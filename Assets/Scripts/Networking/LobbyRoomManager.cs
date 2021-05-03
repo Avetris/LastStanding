@@ -3,8 +3,6 @@ using Mirror;
 using System.Linq;
 using System.Collections.Generic;
 using System;
-using System.Collections;
-using UnityEngine.SceneManagement;
 
 public class LobbyRoomManager : NetworkBehaviour
 {
@@ -25,7 +23,6 @@ public class LobbyRoomManager : NetworkBehaviour
     #endregion
 
     #region Events
-    public static event Action<bool> OnStartGameStatusChanges;
     public static event Action<Enumerators.GameSetting> GameSettingsUpdated;
     public static event Action OnGameFinished;
     public static event Action<int> OnPlayersAliveChanged;
@@ -50,6 +47,25 @@ public class LobbyRoomManager : NetworkBehaviour
         {
             return defaultValue;
         }
+    }
+
+
+    public void SyncDictionaryChanged(SyncDictionary<Enumerators.GameSetting, string>.Operation op, Enumerators.GameSetting setting, string value)
+    {
+
+        CustomNetworkRoomManager networkRoomManager = ((CustomNetworkRoomManager) NetworkManager.singleton);
+        switch(setting)
+        {
+            case Enumerators.GameSetting.MinPlayers:
+                networkRoomManager.minPlayers = (int) Convert.ChangeType(value, typeof(int));
+                networkRoomManager.ReadyStatusChanged();
+                break;
+            case Enumerators.GameSetting.MaxPlayers:
+                networkRoomManager.maxConnections = (int) Convert.ChangeType(value, typeof(int));
+                networkRoomManager.ReadyStatusChanged();
+                break;            
+        }
+
     }
     #endregion
 
@@ -143,65 +159,17 @@ public class LobbyRoomManager : NetworkBehaviour
     }
 
     [Server]
-    private void Start()
-    {
-        if (FindObjectsOfType<LobbyRoomManager>().Length > 1)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        CustomNetworkManager.PlayerNumberUpdated += HandleClientConnect;
-
-        SceneManager.activeSceneChanged += OnSceneChanged;
-        Scene currentScene = SceneManager.GetActiveScene();
-
-        OnSceneChanged(SceneManager.GetActiveScene(), SceneManager.GetActiveScene());
-    }
-
-    private void OnDestroy()
-    {
-        CustomNetworkManager.PlayerNumberUpdated -= HandleClientConnect;
-        SceneManager.activeSceneChanged -= OnSceneChanged;
-    }
-
-    private void OnSceneChanged(Scene oldScene, Scene newScene)
-    {
-        if (this == null || gameObject == null) { return; }
-
-        m_IsPaused = false;
-
-        if (newScene.name == Constants.LobbyScene)
-        {
-            this.Invoke(() => OnStartGameStatusChanges?.Invoke(CanStartGame()), .1f);
-        }
-    }
-
-    [Server]
-    private void HandleClientConnect(int playerCount)
-    {
-        m_CurrentPlayers = playerCount;
-        CheckAlivePlayers();
-
-        OnStartGameStatusChanges?.Invoke(CanStartGame());
-    }
-
-    public bool CanStartGame()
-    {
-        return m_CurrentPlayers >= GetSetting(Enumerators.GameSetting.MinPlayers, Constants.MinPlayers);
-    }
-
-    [Server]
     private void CheckAlivePlayers()
     {
         int currentPlayersAlive = 0;
-        foreach (Player player in ((CustomNetworkManager)NetworkManager.singleton).Players)
-        {
-            if (player.GetComponent<PlayerInfo>().IsAlive())
-            {
-                currentPlayersAlive++;
-            }
-        }
-        if(m_CurrentPlayersAlive != currentPlayersAlive)
+        // foreach (Player player in ((CustomNetworkRoomManager)NetworkManager.singleton).Players)
+        // {
+        //     if (player.GetComponent<PlayerInfo>().IsAlive())
+        //     {
+        //         currentPlayersAlive++;
+        //     }
+        // }
+        if (m_CurrentPlayersAlive != currentPlayersAlive)
         {
             m_CurrentPlayersAlive = currentPlayersAlive;
         }
@@ -211,7 +179,7 @@ public class LobbyRoomManager : NetworkBehaviour
     {
         OnPlayersAliveChanged?.Invoke(newPlayerNumber);
 
-        if(newPlayerNumber < GetSetting<int>(Enumerators.GameSetting.MinPlayers, Constants.MinPlayers))
+        if (newPlayerNumber < GetSetting<int>(Enumerators.GameSetting.MinPlayers, Constants.MinPlayers))
         {
             m_IsPaused = true;
             OnGameFinished?.Invoke();

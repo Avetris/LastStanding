@@ -49,7 +49,7 @@ public class ArrowSpawnerManager : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdEndGame()
     {
-        ((CustomNetworkManager)NetworkManager.singleton).EndGame();
+        ((CustomNetworkRoomManager)NetworkManager.singleton).EndGame();
     }
 
     [Command(requiresAuthority = false)]

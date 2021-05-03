@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -14,7 +15,7 @@ namespace Mirror
     /// <para>The OnRoom*() functions have empty implementations on the NetworkRoomManager base class, so the base class functions do not have to be called.</para>
     /// </remarks>
     [AddComponentMenu("Network/NetworkRoomManager")]
-    [HelpURL("https://mirror-networking.com/docs/Articles/Components/NetworkRoomManager.html")]
+    [HelpURL("https://mirror-networking.gitbook.io/docs/components/network-room-manager")]
     public class NetworkRoomManager : NetworkManager
     {
         public struct PendingPlayer
@@ -81,6 +82,7 @@ namespace Mirror
             {
                 bool wasReady = _allPlayersReady;
                 bool nowReady = value;
+                Debug.Log(wasReady + " SETTING " + nowReady);
 
                 if (wasReady != nowReady)
                 {
@@ -350,6 +352,7 @@ namespace Mirror
         /// <param name="newSceneName"></param>
         public override void ServerChangeScene(string newSceneName)
         {
+            Debug.Log("ServerChangeScene");
             if (newSceneName == RoomScene)
             {
                 foreach (NetworkRoomPlayer roomPlayer in roomSlots)
@@ -359,6 +362,7 @@ namespace Mirror
 
                     // find the game-player object for this connection, and destroy it
                     NetworkIdentity identity = roomPlayer.GetComponent<NetworkIdentity>();
+                    GameObject gamePlayer = identity.gameObject;
 
                     if (NetworkServer.active)
                     {

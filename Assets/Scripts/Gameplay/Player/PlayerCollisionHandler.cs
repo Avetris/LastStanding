@@ -6,7 +6,7 @@ public class PlayerCollisionHandler : NetworkBehaviour
 {
     [SerializeField] private Transform m_RootBone = null;
 
-    private GameObject m_ActionTarget;
+    public GameObject m_ActionTarget;
 
     public GameObject GeActionTarget()
     {

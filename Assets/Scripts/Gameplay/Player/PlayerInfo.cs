@@ -94,7 +94,7 @@ public class PlayerInfo : NetworkBehaviour
         m_CharacterData = playerInfo.m_CharacterData;
         m_Character = playerInfo.m_Character;
         m_DisplayName = playerInfo.m_DisplayName;
-        m_DisplayColor = Color.yellow;
+        m_DisplayColor = playerInfo.GetDisplayColor();
         m_PlayerId = playerInfo.m_PlayerId;
         m_IsAlive = true;
     }

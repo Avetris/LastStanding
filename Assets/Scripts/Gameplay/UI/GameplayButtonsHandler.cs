@@ -13,22 +13,14 @@ public class GameplayButtonsHandler : MonoBehaviour
     {
         m_ActionButton.interactable = false;
         m_SettingsButton.interactable = true;
-
-        m_ActionButton.onClick.AddListener(OnClick);
-        m_SettingsButton.onClick.AddListener(OnSettingsClick);
     }
 
-    public void OnClick()
+    public void OnActionClick()
     {
         if (m_PlayerCollisionHandler != null && m_PlayerCollisionHandler.GeActionTarget() != null)
         {
             m_PlayerCollisionHandler.GeActionTarget().GetComponent<ActionObject>().OnClick();
         }
-    }
-
-    public void OnSettingsClick()
-    {
-        FindObjectOfType<DialogDisplayHandler>().OpenPanel(Enumerators.DialogType.Settings);
     }
 
     private void Update()
