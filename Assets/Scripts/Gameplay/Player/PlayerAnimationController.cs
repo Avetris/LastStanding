@@ -22,34 +22,7 @@ public class PlayerAnimationController : NetworkBehaviour
 
     public void OnIsAliveChangeHandler(bool isAlive)
     {
-        m_Animator.SetBool("Die", !isAlive);
-    }
-
-    public void UpdateCollisionOnDeath(float death)
-    {
-        CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
-
-        if(death == 1.0f)
-        {
-            if (LobbyRoomManager.singleton.GetSetting(Enumerators.GameSetting.DeathCollisions, true))
-            {
-                capsuleCollider.center = new Vector3(-0.5f, 0.4f, -0.45f);
-            }
-            else
-            {
-                capsuleCollider.center = new Vector3(-0.5f, 0, -0.45f);
-            }
-            capsuleCollider.radius = 0.5f;
-            capsuleCollider.direction = 0;
-        }
-        else
-        {
-            capsuleCollider.center = new Vector3(0, 1.1f, 0);
-            capsuleCollider.radius = 0.35f;
-            capsuleCollider.direction = 1;
-        }
-
-
+        m_Animator.enabled = false;
     }
 
     [ClientRpc]

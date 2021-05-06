@@ -39,8 +39,8 @@ public class RoomPlayer : NetworkRoomPlayer
 
         GetComponentInChildren<TMP_Text>().enabled = active;
         GetComponent<Animator>().enabled = active;
-        GetComponent<CapsuleCollider>().enabled = active;
-        GetComponent<SkinnedMeshRenderer>().enabled = active;
+        // GetComponent<CapsuleCollider>().enabled = active;
+        GetComponentInChildren<SkinnedMeshRenderer>().enabled = active;
         GetComponent<PlayerAnimationController>().enabled = active;
         GetComponent<PlayerCollisionHandler>().enabled = active;
         GetComponent<PlayerController>().enabled = active;

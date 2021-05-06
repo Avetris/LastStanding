@@ -68,7 +68,9 @@ public class PlayerInfo : NetworkBehaviour
 
     public Vector3 GetPlayerPosition()
     {
-        return m_Character.bounds.center;
+        Vector3 pos = transform.position;
+        pos.y = m_Character.bounds.center.y;
+        return pos;
     }
 
     public void Kill()

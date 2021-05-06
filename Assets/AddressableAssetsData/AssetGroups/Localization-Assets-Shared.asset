@@ -19,7 +19,7 @@ MonoBehaviour:
   m_SerializeEntries:
   - m_GUID: b8bed1627e3f6954083cf00135687235
     m_Address: TextTable Shared Data
-    m_ReadOnly: 0
+    m_ReadOnly: 1
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
