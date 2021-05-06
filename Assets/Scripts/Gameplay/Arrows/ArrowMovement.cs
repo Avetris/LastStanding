@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEditor;
+using Mirror.Experimental;
 
 public class ArrowMovement : NetworkBehaviour
 {
@@ -53,7 +54,7 @@ public class ArrowMovement : NetworkBehaviour
     {
         //this part of update is only executed, if a rigidbody is present
         // the rigidbody is added when the arrow is shot (released from the bowstring)
-        if (m_ArrowRigidbody != null && !collisionOccurred)
+        if (!collisionOccurred && m_ArrowRigidbody != null)
         {
             // do we fly actually?
             if (m_ArrowRigidbody.velocity != Vector3.zero)
@@ -74,12 +75,11 @@ public class ArrowMovement : NetworkBehaviour
     {
         ApplyCollision(other.gameObject.tag, other);
     }
-
     private void ApplyCollision(string tag, Collision other)
     {
-        if ("Arrow".Equals(tag)) { return; }
+        if ("Arrow".Equals(tag) || "Undefined".Equals(tag)) { return; }
         if (collisionOccurred) { return; }
-        
+             
         if(LobbyRoomManager.singleton.IsPaused() && "Player".Equals(tag)) { return; }
         
         AvoidMoving();
@@ -87,10 +87,13 @@ public class ArrowMovement : NetworkBehaviour
         collisionOccurred = true;
 
         if ("Player".Equals(tag))
-        {
-            HittedPlayer(other.gameObject.GetComponentInParent<PlayerCollisionHandler>(), 
-                         other.GetContact(0).point);
+        {            
+            transform.SetParent(other.gameObject.transform, true);
+            // HittedPlayer(other.gameObject.GetComponentInParent<PlayerCollisionHandler>(), 
+            //              other.GetContact(0).point);
             other.gameObject.GetComponentInParent<PlayerInfo>().Kill();
+            Destroy(GetComponent<NetworkRigidbody>());
+            Destroy(m_ArrowRigidbody);
         }
     }
 
