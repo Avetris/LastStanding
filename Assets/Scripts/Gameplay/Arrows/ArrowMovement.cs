@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using UnityEditor;
 using Mirror.Experimental;
 
 public class ArrowMovement : NetworkBehaviour
@@ -10,8 +7,11 @@ public class ArrowMovement : NetworkBehaviour
     [SerializeField] private Rigidbody m_ArrowRigidbody = null;
 
     // register collision
-    [SyncVar(hook=nameof(OnCollisionChanged))]
-    bool collisionOccurred;
+    [SyncVar(hook = nameof(OnCollisionChanged))]
+    bool m_CollisionOccurred;
+
+    [SyncVar(hook = nameof(OnParentChanged))]
+    Transform m_ParentTransform = null;
 
     // Reference to audioclip when target is hit
     public AudioClip targetHit;
@@ -19,8 +19,13 @@ public class ArrowMovement : NetworkBehaviour
     // Use this for initialization
 
     private void OnCollisionChanged(bool lastState, bool newState)
-    {   
+    {
         AvoidMoving();
+    }
+
+    private void OnParentChanged(Transform oldParent, Transform newParent)
+    {
+        transform.SetParent(newParent, true);
     }
 
     public void Shoot(Vector3 origin, Vector3 target, float time)
@@ -49,12 +54,12 @@ public class ArrowMovement : NetworkBehaviour
         return result;
     }
 
-    [ServerCallback]
+    [ClientCallback]
     void Update()
     {
         //this part of update is only executed, if a rigidbody is present
         // the rigidbody is added when the arrow is shot (released from the bowstring)
-        if (!collisionOccurred && m_ArrowRigidbody != null)
+        if (!m_CollisionOccurred && m_ArrowRigidbody != null)
         {
             // do we fly actually?
             if (m_ArrowRigidbody.velocity != Vector3.zero)
@@ -69,39 +74,41 @@ public class ArrowMovement : NetworkBehaviour
             }
         }
     }
-    
-    [ServerCallback]
+
+    // [ClientCallback]
     public void OnCollisionEnter(Collision other)
     {
-        ApplyCollision(other.gameObject.tag, other);
+        ApplyCollision(other.gameObject);
     }
-    private void ApplyCollision(string tag, Collision other)
+
+    private void OnTriggerEnter(Collider other)
     {
-        if ("Arrow".Equals(tag) || "Undefined".Equals(tag)) { return; }
-        if (collisionOccurred) { return; }
-             
-        if(LobbyRoomManager.singleton.IsPaused() && "Player".Equals(tag)) { return; }
-        
+        ApplyCollision(other.gameObject);
+    }
+
+    private void ApplyCollision(GameObject other)
+    {
+        Debug.Log($"The tag is {other.tag} - name {other.name} - layer  {other.layer}");
+        if ("Untagged".Equals(other.tag)) { return; }
+        if (m_CollisionOccurred) { return; }
+
+        if (LobbyRoomManager.singleton.IsPaused() && "Player".Equals(other.tag)) { return; }
+
+        Vector3 hitDirection = m_ArrowRigidbody.velocity;
+
         AvoidMoving();
         // and a collision occurred
-        collisionOccurred = true;
+        m_CollisionOccurred = true;
 
-        if ("Player".Equals(tag))
-        {            
-            transform.SetParent(other.gameObject.transform, true);
-            // HittedPlayer(other.gameObject.GetComponentInParent<PlayerCollisionHandler>(), 
-            //              other.GetContact(0).point);
-            other.gameObject.GetComponentInParent<PlayerInfo>().Kill();
-            Destroy(GetComponent<NetworkRigidbody>());
-            Destroy(m_ArrowRigidbody);
+        if ("Player".Equals(other.tag))
+        {
+            other.GetComponentInParent<PlayerInfo>().Kill();
+            other.GetComponentInParent<PlayerCollisionHandler>().CmdHitArrow(other.name,
+                                                                             transform.position,
+                                                                             transform.rotation,
+                                                                             hitDirection);
+            Destroy(gameObject);
         }
-    }
-
-    [ClientRpc]
-    private void HittedPlayer(PlayerCollisionHandler playerCollisionHandler, Vector3 collisionPoint)
-    {
-        Transform hittedTransform = playerCollisionHandler.GetHittedBone(collisionPoint);
-        transform.SetParent(hittedTransform, true);
     }
 
     private void AvoidMoving()

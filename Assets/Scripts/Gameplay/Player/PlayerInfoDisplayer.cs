@@ -25,9 +25,9 @@ public class PlayerInfoDisplayer : MonoBehaviour
 
     public void OnColorChangeHandler(Color newColor)
     {
-        foreach (Renderer renderer in m_ColorRenderers)
-        {
-            renderer.material.SetColor("_BaseColor", newColor);
-        }
+        // foreach (Renderer renderer in m_ColorRenderers)
+        // {
+        //     renderer.material.SetColor("_BaseColor", newColor);
+        // }
     }
 }

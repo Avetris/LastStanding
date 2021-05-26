@@ -16,7 +16,7 @@ public class CustomNetworkRoomManager : NetworkRoomManager
     public override void Start()
     {
 
-        foreach (GameObject spawnablePrefab in Resources.LoadAll<GameObject>("Prefabs/Gameplay"))
+        foreach (GameObject spawnablePrefab in Resources.LoadAll<GameObject>("Prefabs/Spawnable"))
         {
             if (spawnablePrefab.GetComponent<NetworkIdentity>() != null)
                 spawnPrefabs.Add(spawnablePrefab);

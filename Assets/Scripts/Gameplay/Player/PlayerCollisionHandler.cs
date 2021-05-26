@@ -1,17 +1,40 @@
 using UnityEngine;
 using Mirror;
-using UnityEngine.UI;
+using System;
+
 
 public class PlayerCollisionHandler : NetworkBehaviour
 {
-    [SerializeField] private Transform m_RootBone = null;
+    public struct ArrowHitData
+    {
+        public string boneName;
+        public Vector3 position;
+        public Quaternion rotation;
+        public Vector3 hitDirection;
+        public float impactEndTime;
 
+        public ArrowHitData(string boneName, Vector3 position, Quaternion rotation, Vector3 hitDirection)
+        {
+            this.boneName = boneName;
+            this.position = position;
+            this.rotation = rotation;
+            this.hitDirection = hitDirection;
+
+            this.impactEndTime = Time.time + 0.25f;
+        }
+    }
+
+    [SerializeField] private GameObject m_HittedArrowPrefab = null;
+
+    [SyncVar(hook = nameof(OnArrowHit))]
+    ArrowHitData m_HittedArrow = new ArrowHitData();
     public GameObject m_ActionTarget;
 
     public GameObject GeActionTarget()
     {
         return m_ActionTarget;
     }
+
     #region Server
 
     [ServerCallback]
@@ -34,18 +57,28 @@ public class PlayerCollisionHandler : NetworkBehaviour
         }
     }
 
-    public Transform GetHittedBone(Vector3 hitPosition)
+    [Command(requiresAuthority = false)]
+    public void CmdHitArrow(string boneName, Vector3 arrowPosition, Quaternion arrowRotation, Vector3 hitDirection)
     {
-        float closestPos = Mathf.Infinity;
-        Transform closestBone = null;
-        foreach (Transform child in m_RootBone) {
-            if(Vector3.Distance(child.position, hitPosition) < closestPos) {
-                closestPos = Vector3.Distance(child.position, hitPosition);
-                closestBone = child;
+        m_HittedArrow = new ArrowHitData(boneName, arrowPosition, arrowRotation, hitDirection);
+    }
+
+    private Transform FindBoneByName(Transform currentBone, string boneName)
+    {
+        Transform bone = currentBone.Find(boneName);
+
+        if (bone == null)
+        {
+            foreach (Transform child in currentBone)
+            {
+                bone = FindBoneByName(child, boneName);
+                if (bone != null)
+                {
+                    break;
+                }
             }
         }
-
-        return closestBone;
+        return bone;
     }
 
     #endregion
@@ -67,5 +100,17 @@ public class PlayerCollisionHandler : NetworkBehaviour
         }
     }
 
+    public void OnArrowHit(ArrowHitData oldData, ArrowHitData newData)
+    {
+        Transform boneTransform = FindBoneByName(transform, newData.boneName);
+
+        Instantiate(m_HittedArrowPrefab,
+                    newData.position,
+                    newData.rotation,
+                    boneTransform);
+        Transform bone = FindBoneByName(transform, m_HittedArrow.boneName);
+        bone.GetComponent<Rigidbody>().AddForce(m_HittedArrow.hitDirection, ForceMode.Impulse);
+
+    }
     #endregion
 }

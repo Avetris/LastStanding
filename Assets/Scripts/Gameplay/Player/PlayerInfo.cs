@@ -76,11 +76,13 @@ public class PlayerInfo : NetworkBehaviour
     public void Kill()
     {
         m_IsAlive = false;
+        GetComponent<PlayerRagdollController>().IsRagdolled = true;
     }
 
     public void Resurrect()
     {
         m_IsAlive = true;
+        GetComponent<PlayerRagdollController>().IsRagdolled = false;
     }
 
     public bool IsAlive()
@@ -111,8 +113,6 @@ public class PlayerInfo : NetworkBehaviour
     [Command]
     public void CmdSetDisplayColor(Color newColor)
     {
-        if (!hasAuthority && !isServer) { return; }
-
         bool canChange = LobbyRoomManager.singleton.CanSetColor(m_PlayerId, m_DisplayColor, newColor);
 
         if (canChange)
