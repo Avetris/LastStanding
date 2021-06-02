@@ -30,29 +30,40 @@ public class PlayerCollisionHandler : NetworkBehaviour
     ArrowHitData m_HittedArrow = new ArrowHitData();
     public GameObject m_ActionTarget;
 
+    private PlayerInfo m_PlayerInfo = null;
+
+    private void Start()
+    {
+        m_PlayerInfo = GetComponent<PlayerInfo>();
+    }
+
     public GameObject GeActionTarget()
     {
         return m_ActionTarget;
     }
 
-    #region Server
-
-    [ServerCallback]
+    [ClientCallback]
     private void OnTriggerEnter(Collider other)
     {
+        if (!hasAuthority) { return; }
         if ("Usable".Equals(other.gameObject.tag))
         {
             m_ActionTarget = other.gameObject;
-            RpcUpdateActionButtonStatus(m_ActionTarget, true);
+            UpdateActionButtonStatus(m_ActionTarget, true);
+        }
+        else if ("Player".Equals(other.gameObject.tag) && m_PlayerInfo.IsAlive() && !m_PlayerInfo.HasFallenDown())
+        {
+            OnAnotherPlayerHit(other.gameObject);
         }
     }
 
-    [ServerCallback]
+    [ClientCallback]
     private void OnTriggerExit(Collider other)
     {
+        if (!hasAuthority) { return; }
         if ("Usable".Equals(other.gameObject.tag) && m_ActionTarget == other.gameObject)
         {
-            RpcUpdateActionButtonStatus(m_ActionTarget, false);
+            UpdateActionButtonStatus(m_ActionTarget, false);
             m_ActionTarget = null;
         }
     }
@@ -81,11 +92,7 @@ public class PlayerCollisionHandler : NetworkBehaviour
         return bone;
     }
 
-    #endregion
-
-    #region Client
-    [ClientRpc]
-    private void RpcUpdateActionButtonStatus(GameObject actionBtn, bool status)
+    private void UpdateActionButtonStatus(GameObject actionBtn, bool status)
     {
         if (!hasAuthority) { return; }
 
@@ -97,6 +104,53 @@ public class PlayerCollisionHandler : NetworkBehaviour
         if (!status)
         {
             m_ActionTarget = null;
+        }
+    }
+
+    /**
+        |      Player 1     |      Player 1     |         |  
+        |-------------------|-------------------|  Falls? |
+        | Running |   Pos   | Running |   Pos   |         |
+        |---------|---------|---------|---------|---------|
+        |---------|---------|---------|---------|---------|
+        |    X    |   b/f   |    X    |    f    |    X    |
+        |---------|---------|---------|---------|---------|
+        |    X    |    f    |    X    |   b/l   |         |
+        |---------|---------|---------|---------|---------|
+        |         |   b/f   |    X    |    f    |    X    |
+        |---------|---------|---------|---------|---------|
+        |    X    |    f    |         |   b/f   |         |
+        |---------|---------|---------|---------|---------|
+        |    X    |    f    |         |    l    |    X    |
+        |---------|---------|---------|---------|---------|
+        |         |    l    |    X    |    f    |         |
+        |---------|---------|---------|---------|---------|
+    **/
+    private void OnAnotherPlayerHit(GameObject other)
+    {
+        PlayerInfo otherPlayerInfo = other.GetComponent<PlayerInfo>();
+        if (otherPlayerInfo == null || otherPlayerInfo.netId == m_PlayerInfo.netId
+        || !otherPlayerInfo.IsAlive() || otherPlayerInfo.HasFallenDown()) { return; }
+
+        bool otherIsRunning = otherPlayerInfo.IsRunning();
+        bool iAmRunning = m_PlayerInfo.IsRunning();
+
+        float angle = Vector3.Angle(transform.forward, other.transform.position - transform.position);
+        float angleTarget = Vector3.Angle(other.transform.forward, transform.position - other.transform.position);
+
+        bool inFrontOfTarget = Mathf.Abs(angle) <= Constants.PlayerPushAngle;
+        bool targetFrontOfUs = Mathf.Abs(angleTarget) <= Constants.PlayerPushAngle;
+
+        bool laterally = !inFrontOfTarget && Mathf.Abs(angle) <= Constants.PlayerPushLateralAngle;
+        bool targetLaterally = !targetFrontOfUs && Mathf.Abs(angleTarget) <= Constants.PlayerPushLateralAngle;
+
+        // Debug.Log($"Angle {angle} -->  {angleTarget} || {laterally} --> {targetLaterally}");
+
+        if ((iAmRunning && otherIsRunning && targetFrontOfUs) ||
+            (!iAmRunning && otherIsRunning && targetFrontOfUs && !laterally) ||
+            (iAmRunning && !otherIsRunning && targetLaterally))
+        {
+            m_PlayerInfo.CmdFallDown();
         }
     }
 
@@ -112,5 +166,4 @@ public class PlayerCollisionHandler : NetworkBehaviour
         bone.GetComponent<Rigidbody>().AddForce(m_HittedArrow.hitDirection, ForceMode.Impulse);
 
     }
-    #endregion
 }

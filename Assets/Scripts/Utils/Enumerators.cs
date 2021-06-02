@@ -11,5 +11,4 @@ public class Enumerators
     public enum GameSetting { MaxPlayers, MinPlayers, FullBots, ArrowSpanwNumber, ArrowTimeSpawn, ArrowCircleTime, ArrowCircleRadius, DeathCollisions};
 
     public enum ArrowType {Normal, Fire, Circle}
-
 }

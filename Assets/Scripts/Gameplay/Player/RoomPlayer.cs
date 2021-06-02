@@ -10,7 +10,7 @@ public class RoomPlayer : NetworkRoomPlayer
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
-        GetComponent<CharacterController>().gameObject.layer = LayerMask.NameToLayer("Player");
+        // GetComponent<CharacterController>().gameObject.layer = LayerMask.NameToLayer("Player");
     }
     #region Server
 
@@ -37,15 +37,15 @@ public class RoomPlayer : NetworkRoomPlayer
     {
         Debug.Log($"OnActiveUpdated {active}");
 
-        GetComponentInChildren<TMP_Text>().enabled = active;
-        GetComponent<Animator>().enabled = active;
+        // GetComponentInChildren<TMP_Text>().enabled = active;
+        // GetComponent<Animator>().enabled = active;
         // GetComponent<CapsuleCollider>().enabled = active;
-        GetComponentInChildren<SkinnedMeshRenderer>().enabled = active;
-        GetComponent<PlayerAnimationController>().enabled = active;
-        GetComponent<PlayerCollisionHandler>().enabled = active;
-        GetComponent<PlayerController>().enabled = active;
+        // GetComponentInChildren<SkinnedMeshRenderer>().enabled = active;
+        // GetComponent<PlayerAnimationController>().enabled = active;
+        // GetComponent<PlayerCollisionHandler>().enabled = active;
+        // GetComponent<PlayerController>().enabled = active;
 
-        Debug.Log(GetComponent<PlayerController>().enabled);
+        // Debug.Log(GetComponent<PlayerController>().enabled);
 
         Debug.Log($"Is client: {isClient}");
     }

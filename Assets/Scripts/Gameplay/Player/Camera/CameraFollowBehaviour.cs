@@ -10,6 +10,8 @@ public class CameraFollowBehaviour : NetworkBehaviour
 
     private Transform m_PlayerTransform;
 
+    private float m_InitialHeight = 0.0f;
+
     // Update is called once per frame
     void Update()
     {
@@ -18,8 +20,10 @@ public class CameraFollowBehaviour : NetworkBehaviour
             if (NetworkClient.connection.identity != null)
             {
                 m_PlayerTransform = NetworkClient.connection.identity.transform;
+                
+                m_InitialHeight = m_PlayerTransform.position.y + offset.y; 
 
-                foreach(FaceCamera faceCamera in FindObjectsOfType<FaceCamera>())
+                foreach (FaceCamera faceCamera in FindObjectsOfType<FaceCamera>())
                 {
                     faceCamera.ResetMainCamera(transform);
                 }
@@ -32,6 +36,7 @@ public class CameraFollowBehaviour : NetworkBehaviour
         if (m_PlayerTransform != null)
         {
             Vector3 desiredPosition = m_PlayerTransform.position + offset;
+            desiredPosition.y = m_InitialHeight;
             Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, m_SmoothSpeed);
 
             transform.position = smoothedPosition;

@@ -15,11 +15,11 @@ public class PlayerAnimationController : NetworkBehaviour
     private PlayerRagdollController m_PlayerRagdollController = null;
     private PlayerController m_PlayerController = null;
 
-    public bool m_FirstAnimatorFrame = true;  // needed for prevent changing position in first animation frame
+    [HideInInspector] public bool m_FirstAnimatorFrame = true;  // needed for prevent changing position in first animation frame
 
     const float k_Half = 0.5f;
 
-    public string currenAnimation;
+    private string currenAnimation;
 
     private void Awake()
     {

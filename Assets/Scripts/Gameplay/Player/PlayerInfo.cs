@@ -8,6 +8,8 @@ public struct CharacterData
     public Color color;
 }
 
+public enum PlayerStatus { Alive, Dead, FallDown }
+
 public class PlayerInfo : NetworkBehaviour
 {
     [SerializeField] private Renderer m_Character;
@@ -20,14 +22,17 @@ public class PlayerInfo : NetworkBehaviour
     [SyncVar(hook = nameof(OnColorChangeHandler))]
     private Color m_DisplayColor = Color.clear;
 
-    [SyncVar(hook = nameof(OnIsAliveChange))]
-    private bool m_IsAlive = true;
+    [SyncVar(hook = nameof(OnStatusChange))]
+    public PlayerStatus m_Status = PlayerStatus.Alive;
+
+    [SyncVar]
+    public bool m_IsRunning = false;
 
     private SyncDictionary<Enumerators.CustomizeItem, CharacterData> m_CharacterData = new SyncDictionary<Enumerators.CustomizeItem, CharacterData>();
 
     public event Action<Color> ClientOnColorUpdated;
     public event Action<string> ClientOnNameUpdated;
-    public event Action<bool> ClientOnIsAliveUpdated;
+    public event Action ClientOnStatusChange;
 
     #region Getters / Setters
 
@@ -64,7 +69,7 @@ public class PlayerInfo : NetworkBehaviour
     public int GetPlayerId()
     {
         return m_PlayerId;
-    }    
+    }
 
     public Vector3 GetPlayerPosition()
     {
@@ -73,21 +78,47 @@ public class PlayerInfo : NetworkBehaviour
         return pos;
     }
 
-    public void Kill()
+    public void SetRunning(bool isRunning)
     {
-        m_IsAlive = false;
-        GetComponent<PlayerRagdollController>().IsRagdolled = true;
+        m_IsRunning = isRunning;
     }
 
-    public void Resurrect()
+    public bool IsRunning()
     {
-        m_IsAlive = true;
-        GetComponent<PlayerRagdollController>().IsRagdolled = false;
+        return m_IsRunning;
+    }
+
+    [Command]
+    public void CmdFallDown()
+    {
+        m_Status = PlayerStatus.FallDown;
+    }
+
+    public void Kill()
+    {
+        CmdKill();
+    }
+
+    [Command]
+    private void CmdKill()
+    {
+        m_Status = PlayerStatus.Dead;
+    }
+
+    [Command]
+    public void CmdResurrect()
+    {
+        m_Status = PlayerStatus.Alive;
     }
 
     public bool IsAlive()
     {
-        return m_IsAlive;
+        return m_Status != PlayerStatus.Dead;
+    }
+
+    public bool HasFallenDown()
+    {
+        return m_Status == PlayerStatus.FallDown;
     }
     #endregion
 
@@ -100,7 +131,7 @@ public class PlayerInfo : NetworkBehaviour
         m_DisplayName = playerInfo.m_DisplayName;
         m_DisplayColor = playerInfo.GetDisplayColor();
         m_PlayerId = playerInfo.m_PlayerId;
-        m_IsAlive = true;
+        m_Status = PlayerStatus.Alive;
     }
 
 
@@ -136,16 +167,16 @@ public class PlayerInfo : NetworkBehaviour
 
     public override void OnStopServer()
     {
-        if(LobbyRoomManager.singleton != null)
+        if (LobbyRoomManager.singleton != null)
         {
             LobbyRoomManager.singleton.CanSetColor(m_PlayerId, m_DisplayColor, Color.clear);
         }
         base.OnStopServer();
     }
 
-    public void OnIsAliveChange(bool oldIsAlive, bool newIsAlive)
+    public void OnStatusChange(PlayerStatus oldStatus, PlayerStatus newStatus)
     {
-        ClientOnIsAliveUpdated?.Invoke(newIsAlive);
+        ClientOnStatusChange?.Invoke();
     }
 
     #endregion

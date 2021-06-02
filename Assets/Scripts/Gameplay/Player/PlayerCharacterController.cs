@@ -14,7 +14,6 @@ public class PlayerCharacterController : NetworkBehaviour
     private CharacterController m_CharacterController = null;
 
     Vector2 m_CurrentMoveDirection = Vector2.zero;
-    private bool m_IsRunning = false;
 
     // constants:
     const float JumpPower = 5f;		// determines the jump force applied when jumping (and therefore the jump height)

@@ -13,13 +13,13 @@ public class PlayerController : NetworkBehaviour
 
     Controls m_Controls;
 
+    PlayerInfo m_PlayerInfo = null;
     PlayerPreviewCameraController m_PlayerPreviewCameraController = null;
     PlayerAnimationController m_PlayerAnimationController = null;
     PlayerCharacterController m_PlayerCharacterController = null;
     PlayerRagdollController m_PlayerRagdollController = null;
 
     Vector2 m_CurrentMoveDirection = Vector2.zero;
-    private bool m_IsRunning = false;
 
     // constants:
     const float JumpPower = 5f;		// determines the jump force applied when jumping (and therefore the jump height)
@@ -38,37 +38,25 @@ public class PlayerController : NetworkBehaviour
 
     public Vector3 CharacterVelocity { get { return m_OnGround ? PlayerVelocity : m_AirVelocity; } }
 
-    [ClientCallback]
     private void Awake()
     {
-        InitInput();
+        m_PlayerInfo = GetComponent<PlayerInfo>();
         m_PlayerPreviewCameraController = GetComponent<PlayerPreviewCameraController>();
         m_PlayerAnimationController = GetComponent<PlayerAnimationController>();
         m_PlayerCharacterController = GetComponent<PlayerCharacterController>();
         m_PlayerRagdollController = GetComponent<PlayerRagdollController>();
-        GetComponent<PlayerInfo>().ClientOnIsAliveUpdated += HandleIsAliveUpdate;
+        m_PlayerInfo.ClientOnStatusChange += HandleStatusChange;
     }
 
-    public bool IsRunning()
+    [ClientCallback]
+    private void Start()
     {
-        return m_IsRunning;
+        InitInput();
     }
 
     private void OnDestroy()
     {
-        GetComponent<PlayerInfo>().ClientOnIsAliveUpdated -= HandleIsAliveUpdate;
-    }
-
-    private void HandleIsAliveUpdate(bool isAlive)
-    {
-        if (isAlive && hasAuthority)
-        {
-            m_Controls.Enable();
-        }
-        else
-        {
-            m_Controls.Disable();
-        }
+        m_PlayerInfo.ClientOnStatusChange -= HandleStatusChange;
     }
 
     [Client]
@@ -84,7 +72,19 @@ public class PlayerController : NetworkBehaviour
 
         m_Controls.Player.Action.performed += SetDoActionInput;
 
-        m_Controls.Enable();
+        HandleStatusChange();
+    }
+
+    private void HandleStatusChange()
+    {
+        if (hasAuthority && m_PlayerInfo.IsAlive())
+        {
+            m_Controls.Enable();
+        }
+        else
+        {
+            m_Controls.Disable();
+        }
     }
 
     private void SetMoveInput(InputAction.CallbackContext ctx)
@@ -94,7 +94,16 @@ public class PlayerController : NetworkBehaviour
         DialogDisplayHandler dialogHandler = FindObjectOfType<DialogDisplayHandler>();
         if (dialogHandler == null || dialogHandler.GetOpenedPanel() == Enumerators.DialogType.None)
         {
-            m_CurrentMoveDirection = ctx.ReadValue<Vector2>();
+            if (!m_PlayerInfo.HasFallenDown())
+            {
+                m_CurrentMoveDirection = ctx.ReadValue<Vector2>();
+            }
+            else
+            {
+                m_PlayerRagdollController.IsRagdolled = false;
+                m_CurrentMoveDirection = Vector2.zero;
+                m_PlayerInfo.SetRunning(false);
+            }
         }
         else if (dialogHandler != null && dialogHandler.GetOpenedPanel() == Enumerators.DialogType.Customize)
         {
@@ -118,7 +127,7 @@ public class PlayerController : NetworkBehaviour
 
     private void SetRunInput(InputAction.CallbackContext ctx)
     {
-        m_IsRunning = ctx.ReadValue<float>() > 0;
+        m_PlayerInfo.SetRunning(ctx.ReadValue<float>() > 0);
     }
 
     private void SetDoActionInput(InputAction.CallbackContext ctx)
@@ -142,7 +151,7 @@ public class PlayerController : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 move = CalculateMove(m_CurrentMoveDirection, m_IsRunning);
+        Vector3 move = CalculateMove(m_CurrentMoveDirection);
 
         // pass all parameters to the character control script
         m_Jump = m_JumpPressed;
@@ -166,11 +175,11 @@ public class PlayerController : NetworkBehaviour
         m_PlayerAnimationController.UpdateAnimator(m_ForwardAmount, m_TurnAmount, m_OnGround, CharacterVelocity); // send input and other state parameters to the animator
     }
 
-    private Vector3 CalculateMove(Vector2 direction, bool isRunning)
+    private Vector3 CalculateMove(Vector2 direction)
     {
         Vector3 moveVector = direction[1] * Vector3.forward + direction[0] * Vector3.right;
 
-        float currentSpeed = isRunning ? m_RunSpeed : m_Speed;
+        float currentSpeed = m_PlayerInfo.IsRunning() ? m_RunSpeed : m_Speed;
 
         return moveVector * currentSpeed * Time.deltaTime;
     }

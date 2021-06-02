@@ -5,7 +5,8 @@ using System.Collections;
 public sealed class PlayerRagdollController : MonoBehaviour
 {
     PlayerAnimationController m_PlayerAnimationController;
-    PlayerController m_playerController;
+    PlayerController m_PlayerController;
+    PlayerInfo m_PlayerInfo;
 
     // parameters for control character moving while it is ragdolled
     private const float AirSpeed = 5f; // determines the max speed of the character while airborne
@@ -54,7 +55,9 @@ public sealed class PlayerRagdollController : MonoBehaviour
         m_PlayerAnimationController = GetComponent<PlayerAnimationController>();
         m_HipsTransform = m_PlayerAnimationController.GetBone(HumanBodyBones.Hips);
         m_HipsTransformRigid = m_HipsTransform.GetComponent<Rigidbody>();
-        m_playerController = GetComponent<PlayerController>();
+        m_PlayerController = GetComponent<PlayerController>();
+        m_PlayerInfo = GetComponent<PlayerInfo>();
+        m_PlayerInfo.ClientOnStatusChange += HandleStatusChange;
 
 
         //Get all the rigid bodies that belong to the ragdoll
@@ -81,16 +84,28 @@ public sealed class PlayerRagdollController : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        m_PlayerInfo.ClientOnStatusChange -= HandleStatusChange;
+    }
+
+    private void HandleStatusChange()
+    {
+        if (m_PlayerInfo.hasAuthority)
+        {
+            IsRagdolled = !m_PlayerInfo.IsAlive() || m_PlayerInfo.HasFallenDown();
+        }
+    }
+
     void FixedUpdate()
     {
-        if (m_State == RagdollState.WaitStablePosition &&
-            m_HipsTransformRigid.velocity.magnitude < 0.1f)
+        if (m_State == RagdollState.WaitStablePosition)
         {
             GetUp();
         }
 
         if (m_State == RagdollState.Animated &&
-            m_playerController.CharacterVelocity.y < -10f)
+            m_PlayerController.CharacterVelocity.y < -10f)
         {
             // kill and resuscitate will force character to enter in Ragdoll 
             RagdollIn();
@@ -203,7 +218,7 @@ public sealed class PlayerRagdollController : MonoBehaviour
         ActivateRagdollParts(true);     // allow the ragdoll RigidBodies to react to the environment
         m_PlayerAnimationController.Enable(false);      // disable animation
         m_State = RagdollState.Ragdolled;
-        ApplyVelocity(m_playerController.CharacterVelocity);
+        ApplyVelocity(m_PlayerController.CharacterVelocity);
     }
 
     /// <summary>
@@ -211,7 +226,8 @@ public sealed class PlayerRagdollController : MonoBehaviour
     /// </summary>
     private void RagdollOut()
     {
-        if (m_State == RagdollState.Ragdolled)
+        if (m_State == RagdollState.Ragdolled &&
+            m_HipsTransformRigid.velocity.magnitude < 0.1f)
             m_State = RagdollState.WaitStablePosition;
     }
 
@@ -318,7 +334,7 @@ public sealed class PlayerRagdollController : MonoBehaviour
 
     private void ActivateRagdollParts(bool activate)
     {
-        m_playerController.CharacterEnable(!activate);
+        m_PlayerController.CharacterEnable(!activate);
 
         //m_HipsTransform.GetComponentInChildren<Collider>()
         foreach (var rigid in m_Rigids)

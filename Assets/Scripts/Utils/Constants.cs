@@ -10,4 +10,6 @@ public class Constants{
     public static int MaxPlayers = 10;
     public static int MinPlayers = 0;
 
+    public static int PlayerPushAngle = 30;
+    public static int PlayerPushLateralAngle = 120;
 }

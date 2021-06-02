@@ -45,7 +45,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 706770072257986932, guid: d4bacd0a6512e384eb957b1bd44b6201, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 906580755122293961, guid: d4bacd0a6512e384eb957b1bd44b6201, type: 3}
       propertyPath: sceneId
@@ -121,7 +121,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3222605191614662024, guid: d4bacd0a6512e384eb957b1bd44b6201, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 3406357852826298382, guid: d4bacd0a6512e384eb957b1bd44b6201, type: 3}
       propertyPath: m_RootOrder
@@ -185,7 +185,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5146307505322120756, guid: d4bacd0a6512e384eb957b1bd44b6201, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 5231700964048864343, guid: d4bacd0a6512e384eb957b1bd44b6201, type: 3}
       propertyPath: m_Layer
