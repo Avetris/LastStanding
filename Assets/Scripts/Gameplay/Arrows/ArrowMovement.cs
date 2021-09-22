@@ -92,7 +92,7 @@ public class ArrowMovement : NetworkBehaviour
         if ("Untagged".Equals(other.tag)) { return; }
         if (m_CollisionOccurred) { return; }
 
-        if (LobbyRoomManager.singleton.IsPaused() && "Player".Equals(other.tag)) { return; }
+        if (LobbyRoomManager.instance.IsPaused() && "Player".Equals(other.tag)) { return; }
 
         Vector3 hitDirection = m_ArrowRigidbody.velocity;
 

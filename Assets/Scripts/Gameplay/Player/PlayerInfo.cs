@@ -140,17 +140,6 @@ public class PlayerInfo : NetworkBehaviour
     {
         SetDisplayName(newName);
     }
-
-    [Command]
-    public void CmdSetDisplayColor(Color newColor)
-    {
-        bool canChange = LobbyRoomManager.singleton.CanSetColor(m_PlayerId, m_DisplayColor, newColor);
-
-        if (canChange)
-        {
-            SetDisplayColor(newColor);
-        }
-    }
     #endregion
 
     #region Client
@@ -163,15 +152,6 @@ public class PlayerInfo : NetworkBehaviour
     public void OnColorChangeHandler(Color oldColor, Color newColor)
     {
         ClientOnColorUpdated?.Invoke(newColor);
-    }
-
-    public override void OnStopServer()
-    {
-        if (LobbyRoomManager.singleton != null)
-        {
-            LobbyRoomManager.singleton.CanSetColor(m_PlayerId, m_DisplayColor, Color.clear);
-        }
-        base.OnStopServer();
     }
 
     public void OnStatusChange(PlayerStatus oldStatus, PlayerStatus newStatus)

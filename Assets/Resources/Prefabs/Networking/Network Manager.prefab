@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6642615978487215699}
   - component: {fileID: 2807435739643491676}
-  - component: {fileID: 6662383040364666144}
-  - component: {fileID: 2754783239774554741}
+  - component: {fileID: 265930157487298477}
+  - component: {fileID: 696523582}
+  - component: {fileID: 3699560050893458042}
   m_Layer: 0
   m_Name: Network Manager
   m_TagString: Untagged
@@ -46,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
-  PersistNetworkManagerToOfflineScene: 0
+  PersistNetworkManagerToOfflineScene: 1
   runInBackground: 1
   autoStartServerBuild: 1
   serverTickRate: 30
@@ -54,7 +55,7 @@ MonoBehaviour:
   serverBatchInterval: 0
   offlineScene: Assets/Scenes/MainMenuScene.unity
   onlineScene: Assets/Scenes/LobbyScene.unity
-  transport: {fileID: 6662383040364666144}
+  transport: {fileID: 265930157487298477}
   networkAddress: localhost
   maxConnections: 100
   disconnectInactiveConnections: 1
@@ -74,7 +75,7 @@ MonoBehaviour:
   clientIndex: 0
   m_LobbyRoomManagerPrefab: {fileID: 3967906330094009760, guid: 940e424c5f20c2b4a8f0893d3260a5e3, type: 3}
   m_RespawnPlayersPoints: 
---- !u!114 &6662383040364666144
+--- !u!114 &265930157487298477
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -83,20 +84,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 8026405548227016870}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
+  m_Script: {fileID: 11500000, guid: f5f2d307354f3ea49b3ea12e6763a9fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Port: 7777
-  NoDelay: 1
-  Interval: 10
-  FastResend: 2
-  CongestionWindow: 0
-  SendWindowSize: 4096
-  ReceiveWindowSize: 4096
-  debugLog: 0
-  statisticsGUI: 0
-  statisticsLog: 0
---- !u!114 &2754783239774554741
+  Channels: 0200000000000000
+  timeout: 25
+  maxFragments: 55
+  ignoreCachedMessagesAtStartUpInSeconds: 2
+  relayControl: 1
+--- !u!114 &696523582
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -105,9 +101,39 @@ MonoBehaviour:
   m_GameObject: {fileID: 8026405548227016870}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Script: {fileID: 11500000, guid: 09c2b9adb023e6547aa45a0e8bf5fcfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showGUI: 1
-  offsetX: 0
-  offsetY: 0
+  epicProductName: Last Standing
+  epicProductVersion: 1.0
+  epicProductId: 6d06820d56364f25a3ecb983fa98438e
+  epicSandboxId: cd729502ac2d4ec0975ef17c7e57b8f1
+  epicDeploymentId: abd2f6c73e564bb3ac0dddd329c0d8ad
+  epicClientId: xyza7891xqp0IpJVcbuzHSV7gqpAslhn
+  epicClientSecret: mHtPQLpuJl6exNtZocooeGcZhJ+T00PPXPwXo7VPk20
+  autoLogoutInEditor: 1
+  authInterfaceLogin: 1
+  authInterfaceCredentialType: 4
+  devAuthToolPort: 7878
+  devAuthToolCredentialName: Quantvm1
+  connectInterfaceCredentialType: 0
+  deviceModel: PC Windows 64bit
+  displayName: User
+  epicLoggerLevel: 200
+  collectPlayerMetrics: 1
+  checkForEpicLauncherAndRestart: 0
+  delayedInitialization: 0
+  platformTickIntervalInSeconds: 0
+  tickBudgetInMilliseconds: 0
+--- !u!114 &3699560050893458042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8026405548227016870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3c25f2ee62cdf44497a00b67a7b2c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

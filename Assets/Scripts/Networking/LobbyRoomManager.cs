@@ -1,14 +1,17 @@
-using UnityEngine;
+using Epic.OnlineServices;
 using Mirror;
-using System.Linq;
-using System.Collections.Generic;
 using System;
 
 public class LobbyRoomManager : NetworkBehaviour
 {
+    private static string TAG = "LobbyRoomManager";
+
+    EOSLobby m_EOSLobby = null;
+    private SyncDictionary<Enumerators.GameSetting, object> m_GameSetting = new SyncDictionary<Enumerators.GameSetting, object>();
+
     #region Singleton
     private static LobbyRoomManager s_Instance;
-    public static LobbyRoomManager singleton
+    public static LobbyRoomManager instance
     {
         get
         {
@@ -26,14 +29,51 @@ public class LobbyRoomManager : NetworkBehaviour
     public static event Action<Enumerators.GameSetting> GameSettingsUpdated;
     public static event Action OnGameFinished;
     public static event Action<int> OnPlayersAliveChanged;
+    public static event Action<bool> OnShowCodeChanged;
     #endregion
 
+    private void Start()
+    {
+        m_EOSLobby = FindObjectOfType<EOSLobby>();
+        m_GameSetting.Callback += SyncDictionaryChanged;
+
+        GetLobbyAttributes();
+    }
+
+    private void OnDestroy()
+    {
+        m_GameSetting.Callback -= SyncDictionaryChanged;
+    }
+
+    private void GetLobbyAttributes()
+    {
+        foreach (Epic.OnlineServices.Lobby.Attribute attribute in m_EOSLobby.GetCurrentData())
+        {
+            Enumerators.GameSetting key;
+            if (Enum.TryParse<Enumerators.GameSetting>(attribute.Data.Key, true, out key))
+            {
+                AttributeType type = attribute.Data.Value.ValueType;
+                switch (type)
+                {
+                    case AttributeType.Boolean: UpdateSetting(key, attribute.Data.Value.AsBool); break;
+                    case AttributeType.String: UpdateSetting(key, attribute.Data.Value.AsUtf8); break;
+                    case AttributeType.Int64: UpdateSetting(key, attribute.Data.Value.AsInt64); break;
+                    case AttributeType.Double: UpdateSetting(key, attribute.Data.Value.AsDouble); break;
+                }
+            }
+            else
+            {
+                LogManager.Error(TAG, "Start", attribute.Data.Key);
+            }
+        }
+    }
+
     #region GameSettings
-    private SyncDictionary<Enumerators.GameSetting, string> m_GameSetting = new SyncDictionary<Enumerators.GameSetting, string>();
 
     public void UpdateSetting<T>(Enumerators.GameSetting variable, T newValue)
     {
-        m_GameSetting[variable] = newValue.ToString();
+        m_GameSetting[variable] = newValue;
+        UnityEngine.Debug.Log($"Changing data {variable} --> {newValue}");
         GameSettingsUpdated?.Invoke(variable);
     }
 
@@ -50,101 +90,45 @@ public class LobbyRoomManager : NetworkBehaviour
     }
 
 
-    public void SyncDictionaryChanged(SyncDictionary<Enumerators.GameSetting, string>.Operation op, Enumerators.GameSetting setting, string value)
+    public void SyncDictionaryChanged(SyncDictionary<Enumerators.GameSetting, object>.Operation op, Enumerators.GameSetting key, object value)
     {
-
-        CustomNetworkRoomManager networkRoomManager = ((CustomNetworkRoomManager) NetworkManager.singleton);
-        switch(setting)
+        UnityEngine.Debug.Log($"SyncDictionaryChanged {op} --> {key} --> {value}");
+        CustomNetworkRoomManager networkRoomManager = ((CustomNetworkRoomManager)NetworkManager.singleton);
+        switch (key)
         {
-            case Enumerators.GameSetting.MinPlayers:
-                networkRoomManager.minPlayers = (int) Convert.ChangeType(value, typeof(int));
+            case Enumerators.GameSetting.Max_Players:
+                networkRoomManager.maxConnections = (int)Convert.ChangeType(value, typeof(int));
                 networkRoomManager.ReadyStatusChanged();
                 break;
-            case Enumerators.GameSetting.MaxPlayers:
-                networkRoomManager.maxConnections = (int) Convert.ChangeType(value, typeof(int));
-                networkRoomManager.ReadyStatusChanged();
-                break;            
-        }
-
-    }
-    #endregion
-
-    #region Color
-    private SyncDictionary<Color, int> m_PlayerColors = new SyncDictionary<Color, int>{
-        {Color.red, -1},
-        {Color.magenta, -1},
-        {Color.blue, -1},
-        {Color.green, -1},
-        {Color.white, -1},
-        {Color.black, -1},
-        {Color.gray, -1},
-        {Color.yellow, -1},
-        {new Color(0.93f, 0.33f, 0.73f), -1},
-        {new Color(0.94f, 0.49f, 0.05f), -1},
-        {new Color(0.42f, 0.19f, 0.74f), -1},
-        {new Color(0.44f, 0.29f, 0.12f), -1},
-        {new Color(0.22f, 1, 0.86f), -1},
-        {new Color(0.31f, 0.94f, 0.22f), -1},
-        {new Color(0.83f, 0.69f, 0.22f), -1},
-    };
-
-    public void UpdateColorChangeListeners(bool add, SyncDictionary<Color, int>.SyncDictionaryChanged callback)
-    {
-        if (add)
-        {
-            m_PlayerColors.Callback += callback;
-        }
-        else
-        {
-            m_PlayerColors.Callback -= callback;
-        }
-    }
-
-    public List<(Color color, int playerId)> GetColors()
-    {
-        return m_PlayerColors.Select(x => (x.Key, x.Value)).ToList();
-    }
-
-    [Server]
-    public Color GetNextColor(int playerId)
-    {
-        Color col = Color.clear;
-        foreach (KeyValuePair<Color, int> entry in m_PlayerColors)
-        {
-            if (entry.Value == -1)
-            {
-                col = entry.Key;
+            case Enumerators.GameSetting.Hide_Lobby_Code:
+                OnShowCodeChanged?.Invoke((bool)value);
                 break;
-            }
         }
-        m_PlayerColors[col] = playerId;
-
-        return col;
+        if (op == SyncIDictionary<Enumerators.GameSetting, object>.Operation.OP_SET)
+        {
+            UpdateServerAttribute(value.GetType(), key.ToString(), value);
+        }
     }
 
-    [Server]
-    public bool CanSetColor(int playerId, Color oldColor, Color newColor)
+    private void UpdateServerAttribute(Type type, string key, object value)
     {
-        bool can = false;
-
-        if (newColor == Color.clear)
+        if (type == typeof(int))
         {
-            can = true;
+            m_EOSLobby.UpdateLobbyAttribute(key, (int)value);
         }
-        else if (m_PlayerColors[newColor] == -1)
+        else if (type == typeof(bool))
         {
-            can = true;
-            m_PlayerColors[newColor] = playerId;
+            m_EOSLobby.UpdateLobbyAttribute(key, (bool)value);
         }
-
-        if (can && oldColor != Color.clear)
+        else if (type == typeof(string))
         {
-            m_PlayerColors[oldColor] = -1;
+            m_EOSLobby.UpdateLobbyAttribute(key, (string)value);
         }
-
-        return can;
+        else if (type == typeof(double))
+        {
+            m_EOSLobby.UpdateLobbyAttribute(key, (double)value);
+        }
     }
-
     #endregion
 
     private int m_CurrentPlayers;
@@ -179,7 +163,7 @@ public class LobbyRoomManager : NetworkBehaviour
     {
         OnPlayersAliveChanged?.Invoke(newPlayerNumber);
 
-        if (newPlayerNumber < GetSetting<int>(Enumerators.GameSetting.MinPlayers, Constants.MinPlayers))
+        if (newPlayerNumber < GetSetting<int>(Enumerators.GameSetting.Min_Players, Constants.MinPlayers))
         {
             m_IsPaused = true;
             OnGameFinished?.Invoke();

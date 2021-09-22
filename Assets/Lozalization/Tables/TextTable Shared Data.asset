@@ -15,36 +15,144 @@ MonoBehaviour:
   m_TableCollectionName: TextTable
   m_TableCollectionNameGuidString: b8bed1627e3f6954083cf00135687235
   m_Entries:
-  - m_Id: 82106605568
-    m_Key: max_players_limit
+  - m_Id: 29247051466014720
+    m_Key: arrows_closing_interval
     m_Metadata:
       m_Items: []
-  - m_Id: 1689506504704
-    m_Key: color
+  - m_Id: 29246891910496256
+    m_Key: arrows_closing_radius
     m_Metadata:
       m_Items: []
-  - m_Id: 1748398727168
-    m_Key: head
+  - m_Id: 29246304393363456
+    m_Key: arrows_spawn_interval
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29245613088178176
+    m_Key: arrows_spawn_number
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27791162267664384
+    m_Key: back
     m_Metadata:
       m_Items: []
   - m_Id: 1779478519808
     m_Key: body
     m_Metadata:
       m_Items: []
-  - m_Id: 1824827334656
-    m_Key: legs
+  - m_Id: 29323178977001472
+    m_Key: code
     m_Metadata:
       m_Items: []
-  - m_Id: 1873384792064
-    m_Key: shoes
+  - m_Id: 29248517731778560
+    m_Key: create_lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146818848260096
+    m_Key: error_create_lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146902507847680
+    m_Key: error_destroy_lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146900079345664
+    m_Key: error_find_lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146539541168128
+    m_Key: error_find_lobby_code
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146901698347008
+    m_Key: error_join_lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146903174742016
+    m_Key: error_leaving_lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146904034574336
+    m_Key: error_remove_attribute_lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146904655331328
+    m_Key: error_update_attribute_lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146831624110080
+    m_Key: error_update_lobby
     m_Metadata:
       m_Items: []
   - m_Id: 6839667528785920
     m_Key: game_not_available
     m_Metadata:
       m_Items: []
+  - m_Id: 1748398727168
+    m_Key: head
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29247401791062016
+    m_Key: hide_private_lobby_code
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1689506504704
+    m_Key: host
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1824827334656
+    m_Key: legs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29306591020580864
+    m_Key: lobby_code_placeholder
+    m_Metadata:
+      m_Items: []
   - m_Id: 12215948097064960
     m_Key: main_menu_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29265281370816512
+    m_Key: max_players
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82106605568
+    m_Key: max_players_limit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26752929530380288
+    m_Key: private
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29247221171748864
+    m_Key: private_lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26752593436606464
+    m_Key: public
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1873384792064
+    m_Key: shoes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32149042047483904
+    m_Key: error_generic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32206512157622272
+    m_Key: error_find_lobby_code_not_found
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32229417058828288
+    m_Key: joining_to_lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32496874914840576
+    m_Key: leave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32890114201616384
+    m_Key: creating_lobby
     m_Metadata:
       m_Items: []
   m_Metadata:

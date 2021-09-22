@@ -23,7 +23,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1689506504704
-    m_Localized: Color
+    m_Localized: Host
     m_Metadata:
       m_Items: []
   - m_Id: 1748398727168
@@ -48,6 +48,106 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 12215948097064960
     m_Localized: Main Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26752593436606464
+    m_Localized: Public
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26752929530380288
+    m_Localized: Private
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27791162267664384
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29245613088178176
+    m_Localized: Number of Arrows
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29246304393363456
+    m_Localized: Arrows Interval
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29246891910496256
+    m_Localized: Closing Radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29247051466014720
+    m_Localized: Closing Interval
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29247221171748864
+    m_Localized: Private Lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29247401791062016
+    m_Localized: Hide Lobby Code
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29248517731778560
+    m_Localized: Create Lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29265281370816512
+    m_Localized: Max Players
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29306591020580864
+    m_Localized: Hiden Code
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29323178977001472
+    m_Localized: Code
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146904655331328
+    m_Localized: There has been an error updating the lobby's parameters.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146831624110080
+    m_Localized: 
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146904034574336
+    m_Localized: There has been an error removing the lobby's parameters.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146901698347008
+    m_Localized: There has been an error joining to the lobby. Try it Again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146903174742016
+    m_Localized: 
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146539541168128
+    m_Localized: There has been an error with the introduced code. Try it Again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32149042047483904
+    m_Localized: There has been an error.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32206512157622272
+    m_Localized: Not exists a lobby with the introduced code.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32229417058828288
+    m_Localized: Joining to the lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32496874914840576
+    m_Localized: Leave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32890114201616384
+    m_Localized: Creating Lobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32146818848260096
+    m_Localized: There has been an error creating the lobby
     m_Metadata:
       m_Items: []
   references:

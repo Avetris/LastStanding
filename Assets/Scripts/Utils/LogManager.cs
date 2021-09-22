@@ -1,38 +1,47 @@
 
 
-public class LogManager{
+public class LogManager
+{
 
-    private enum LogType {Debug, Info, Error};
+    private enum LogType { Debug, Info, Error };
 
-    public static void Debug(string className, string text)
+    public static void Debug(string className, string methodName, string text)
     {
-        Print(className, text, LogType.Debug);
+        Print(className, methodName, text, LogType.Debug);
     }
 
-    public static void Info(string className, string text)
+    public static void Info(string className, string methodName, string text)
     {
-        Print(className, text, LogType.Info);
+        Print(className, methodName, text, LogType.Info);
     }
 
-    public static void Error(string className, string text)
+    public static void Error(string className, string methodName, string text)
     {
-        Print(className, text, LogType.Error);
+        Print(className, methodName, text, LogType.Error);
     }
 
-    private static void Print(string className, string text, LogType type)
+    private static void Print(string className, string methodName, string text, LogType type)
     {
-        string message = $"{className} -->  {text}";
-
-        switch(type)
+        string message;
+        if (methodName == null)
         {
-            case LogType.Debug: 
-                UnityEngine.Debug.Log(message); 
+            message = $"{className} --> {text}";
+        }
+        else
+        {
+            message = $"{className}::{methodName} --> {text}";
+        }
+
+        switch (type)
+        {
+            case LogType.Debug:
+                UnityEngine.Debug.Log(message);
                 break;
-            case LogType.Info: 
-                UnityEngine.Debug.Log(message); 
+            case LogType.Info:
+                UnityEngine.Debug.Log(message);
                 break;
-            case LogType.Error: 
-                UnityEngine.Debug.LogError(message); 
+            case LogType.Error:
+                UnityEngine.Debug.LogError(message);
                 break;
         }
     }

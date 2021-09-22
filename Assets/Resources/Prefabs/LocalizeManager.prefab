@@ -43,6 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 806cc1c983a788d45ad876c18434306f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _localizedStringTable:
+  m_LocalizedStringTable:
     m_TableReference:
       m_TableCollectionName: GUID:b8bed1627e3f6954083cf00135687235

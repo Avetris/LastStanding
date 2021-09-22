@@ -5,8 +5,21 @@ using UnityEngine;
 public class CustomNetworkRoomManager : NetworkRoomManager
 {
     [SerializeField] private GameObject m_LobbyRoomManagerPrefab = null;
+    private EOSLobby m_EOSLobby;
 
     public int[] m_RespawnPlayersPoints = new int[Constants.MaxPlayers];
+    private (Color color, int playerId)[] m_PlayerColors = new (Color color, int playerId)[] {
+        (Color.red, -1),
+        ( Color.magenta, -1),
+        ( Color.blue, -1),
+        ( Color.green, -1),
+        ( Color.white, -1),
+        ( Color.black, -1),
+        ( Color.gray, -1),
+        ( Color.yellow, -1),
+        ( Color.cyan, -1),
+        ( Color.grey, -1),
+    };
 
     public static event Action PlayerOnAddToRoom;
     public static event Action ClientOnDisconnected;
@@ -15,6 +28,7 @@ public class CustomNetworkRoomManager : NetworkRoomManager
 
     public override void Start()
     {
+        m_EOSLobby = FindObjectOfType<EOSLobby>();
 
         foreach (GameObject spawnablePrefab in Resources.LoadAll<GameObject>("Prefabs/Spawnable"))
         {
@@ -32,8 +46,8 @@ public class CustomNetworkRoomManager : NetworkRoomManager
     {
         NetworkServer.Spawn(Instantiate(m_LobbyRoomManagerPrefab, Vector3.zero, Quaternion.identity));
 
-        minPlayers = LobbyRoomManager.singleton.GetSetting<int>(Enumerators.GameSetting.MinPlayers, Constants.MinPlayers);
-        maxConnections = LobbyRoomManager.singleton.GetSetting<int>(Enumerators.GameSetting.MaxPlayers, Constants.MaxPlayers);
+        minPlayers = Constants.MinPlayers;
+        maxConnections = LobbyRoomManager.instance.GetSetting<int>(Enumerators.GameSetting.Max_Players, Constants.MaxPlayers);
     }
 
     public override GameObject OnRoomServerCreateRoomPlayer(NetworkConnection conn)
@@ -48,7 +62,7 @@ public class CustomNetworkRoomManager : NetworkRoomManager
 
         PlayerInfo playerInfo = newRoomGameObject.GetComponent<PlayerInfo>();
         playerInfo.SetDisplayName($"Player {conn.connectionId}");
-        playerInfo.SetDisplayColor(LobbyRoomManager.singleton.GetNextColor(conn.connectionId));
+        playerInfo.SetDisplayColor(GetNextColor(conn.connectionId, true));
 
         return newRoomGameObject;
     }
@@ -71,7 +85,7 @@ public class CustomNetworkRoomManager : NetworkRoomManager
 
     public override void OnRoomClientEnter()
     {
-        foreach(RoomPlayer roomPlayer in FindObjectsOfType<RoomPlayer>())
+        foreach (RoomPlayer roomPlayer in FindObjectsOfType<RoomPlayer>())
         {
             roomPlayer.GetComponent<RoomPlayer>().RpcChangeState(true);
         }
@@ -79,7 +93,7 @@ public class CustomNetworkRoomManager : NetworkRoomManager
 
     public override void OnRoomClientExit()
     {
-        foreach(RoomPlayer roomPlayer in FindObjectsOfType<RoomPlayer>())
+        foreach (RoomPlayer roomPlayer in FindObjectsOfType<RoomPlayer>())
         {
             roomPlayer.GetComponent<RoomPlayer>().RpcChangeState(false);
         }
@@ -94,6 +108,33 @@ public class CustomNetworkRoomManager : NetworkRoomManager
         {
             // Spawner.InitialSpawn();
         }
+    }
+
+    public Color GetNextColor(int idPlayer, bool isNew = false)
+    {
+        int respawnPos = 0;
+        if (isNew)
+        {
+            for (; respawnPos < m_PlayerColors.Length; respawnPos++)
+            {
+                if (m_PlayerColors[respawnPos].playerId < 0)
+                {
+                    m_PlayerColors[respawnPos].playerId = idPlayer;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (; respawnPos < m_PlayerColors.Length; respawnPos++)
+            {
+                if (m_PlayerColors[respawnPos].playerId == idPlayer)
+                {
+                    break;
+                }
+            }
+        }
+        return m_PlayerColors[respawnPos].color;
     }
 
     public int GetNextRespawnPosition(int idPlayer, bool isNew = false)
@@ -139,22 +180,28 @@ public class CustomNetworkRoomManager : NetworkRoomManager
     {
         base.OnRoomStopClient();
 
-        DestroyLobbyRoomManager();
+        m_EOSLobby.LeaveLobby();
+
+        CloseSession();
+    }
+
+    public override void OnRoomStopHost()
+    {
+        base.OnRoomStopHost();
+
+        CloseSession();
     }
 
     public override void OnRoomStopServer()
     {
         base.OnRoomStopServer();
 
-        DestroyLobbyRoomManager();
+        CloseSession();
     }
 
-    private void DestroyLobbyRoomManager()
+    private void CloseSession()
     {
-        if (LobbyRoomManager.singleton != null)
-        {
-            Destroy(LobbyRoomManager.singleton.gameObject);
-        }
+        m_EOSLobby.LeaveLobby();
     }
 
     public override void OnRoomServerPlayersReady()
@@ -170,8 +217,6 @@ public class CustomNetworkRoomManager : NetworkRoomManager
         base.OnRoomServerPlayersNotReady();
     }
 
-
-
     public void StartGame()
     {
         ReadyStatusChanged();
@@ -185,5 +230,4 @@ public class CustomNetworkRoomManager : NetworkRoomManager
         // m_IsGameInProgress = false;
         // ServerChangeScene(Constants.LobbyScene);
     }
-
 }

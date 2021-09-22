@@ -15,13 +15,13 @@ public class LobbyMenu : MonoBehaviour
 
     private void Start()
     {
-        CustomNetworkManager.ClientOnConnected += HandleClientConnect;
+        // CustomNetworkManager.ClientOnConnected += HandleClientConnect;
         // Player.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
     }
 
     private void OnDestroy()
     {
-        CustomNetworkManager.ClientOnConnected -= HandleClientConnect;
+        // CustomNetworkManager.ClientOnConnected -= HandleClientConnect;
         // Player.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
     }
 

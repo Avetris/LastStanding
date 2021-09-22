@@ -34,6 +34,18 @@ public class DialogDisplayHandler : MonoBehaviour
         openedPanel = Enumerators.DialogType.None;
     }
 
+    public void OpenPanelFromUI(string panelName)
+    {
+        Enumerators.DialogType dialogType = Enumerators.DialogType.None;
+        if (Enum.TryParse<Enumerators.DialogType>(panelName, true, out dialogType))
+        {
+            OpenPanel(dialogType);
+        }
+        else
+        {
+            LogManager.Error(TAG, "OpenPanelFromUI", $"Panel name not found. Panel name provided: {panelName}");
+        }
+    }
 
     public void OpenPanel(Enumerators.DialogType panelToOpen)
     {
@@ -53,19 +65,6 @@ public class DialogDisplayHandler : MonoBehaviour
         {
             openedPanel = panelToOpen;
             OnDialogChange?.Invoke(true);
-        }
-    }
-
-    public void OpenPanelFromUI(string panelName)
-    {
-        Enumerators.DialogType dialogType = Enumerators.DialogType.None;
-        if (Enum.TryParse<Enumerators.DialogType>(panelName, true, out dialogType))
-        {
-
-        }
-        else
-        { 
-            LogManager.Error(TAG, $"OpenPanelFromUI::Panel name not found. Panel name provided: {panelName}");  
         }
     }
 }

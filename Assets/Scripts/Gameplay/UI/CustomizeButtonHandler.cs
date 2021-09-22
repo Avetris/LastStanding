@@ -64,11 +64,8 @@ public class CustomizeButtonHandler : MonoBehaviour
 
     public void OnClick()
     {
-        switch(m_ItemType)
-        {
-            case Enumerators.CustomizeItem.Color:
-                m_PlayerInfo.CmdSetDisplayColor(m_Image.color);
-                break;
-        }
+        // switch(m_ItemType)
+        // {
+        // }
     }
 }

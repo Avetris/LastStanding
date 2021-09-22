@@ -89,7 +89,7 @@ public class PlayerController : NetworkBehaviour
 
     private void SetMoveInput(InputAction.CallbackContext ctx)
     {
-        if (LobbyRoomManager.singleton.IsPaused()) { return; }
+        if (LobbyRoomManager.instance.IsPaused()) { return; }
 
         DialogDisplayHandler dialogHandler = FindObjectOfType<DialogDisplayHandler>();
         if (dialogHandler == null || dialogHandler.GetOpenedPanel() == Enumerators.DialogType.None)
@@ -146,7 +146,7 @@ public class PlayerController : NetworkBehaviour
 
     private bool PlayerTouchGound()
     {
-        return m_PlayerCharacterController.IsGrounded();
+        return m_PlayerCharacterController.IsGrounded(); 
     }
 
     private void FixedUpdate()

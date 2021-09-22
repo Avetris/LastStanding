@@ -21,8 +21,6 @@ MonoBehaviour:
     m_Address: TextTable Shared Data
     m_ReadOnly: 1
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: 32bf2eb4a8acdcd41a8de96cc7ad0d90, type: 2}
   m_SchemaSet:

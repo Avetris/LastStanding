@@ -54,26 +54,26 @@ public class CustomizePanelHandler : MonoBehaviour
 
         if (m_CurrentTab == Enumerators.CustomizeItem.Color)
         {
-            LobbyRoomManager.singleton.UpdateColorChangeListeners(false, OnColorAvailabilityChanges);
+            // LobbyRoomManager.singleton.UpdateColorChangeListeners(false, OnColorAvailabilityChanges);
         }
         else if (tab == Enumerators.CustomizeItem.Color)
         {
-            LobbyRoomManager.singleton.UpdateColorChangeListeners(true, OnColorAvailabilityChanges);
+            // LobbyRoomManager.singleton.UpdateColorChangeListeners(true, OnColorAvailabilityChanges);
         }
 
         m_CurrentTab = tab;
 
         List<GameObject> buttons = new List<GameObject>();
-        switch (tab)
-        {
-            case Enumerators.CustomizeItem.Color:
-                foreach ((Color color, int playerId) tuple in LobbyRoomManager.singleton.GetColors())
-                {
-                    bool selected = tuple.playerId == m_PlayerInfo.GetPlayerId();
-                    buttons.Add(CreateButton(tuple.color, null, selected || tuple.playerId == -1, selected));
-                }
-                break;
-        }
+        // switch (tab)
+        // {
+        //     case Enumerators.CustomizeItem.Color:
+        //         foreach ((Color color, int playerId) tuple in LobbyRoomManager.singleton.GetColors())
+        //         {
+        //             bool selected = tuple.playerId == m_PlayerInfo.GetPlayerId();
+        //             buttons.Add(CreateButton(tuple.color, null, selected || tuple.playerId == -1, selected));
+        //         }
+        //         break;
+        // }
         if (buttons.Count > 0)
         {
             CreateTab(buttons);
@@ -138,28 +138,6 @@ public class CustomizePanelHandler : MonoBehaviour
         handler.ChangeAvailability(selected || available);
 
         return btn;
-    }
-
-    private void OnColorAvailabilityChanges(SyncDictionary<Color, int>.Operation op, Color color, int playerId)
-    {
-        if (m_CurrentTab == Enumerators.CustomizeItem.Color)
-        {
-            foreach (CustomizeButtonHandler child in m_CustomizePanel.GetComponentsInChildren<CustomizeButtonHandler>())
-            {
-                if (color == child.GetColor())
-                {
-                    bool selected = m_PlayerInfo.GetPlayerId() == playerId;
-
-                    child.ChangeAvailability(playerId == -1 || selected);
-                    child.ChangeSelected(selected);
-                }
-            }
-        }
-    }
-
-    private void SetColor(Color color)
-    {
-        m_PlayerInfo?.SetDisplayColor(color);
     }
 
     public void StartPreviewRotate(bool left)
